@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0f0f11">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>MHS3 Monster Reference</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0f0f11;
+    --bg-card: #18181c;
+    --bg-secondary: #222228;
+    --bg-sticky: rgba(15,15,17,0.92);
+    --border: rgba(255,255,255,0.08);
+    --border-hover: rgba(255,255,255,0.16);
+    --text: #f0f0f2;
+    --text-muted: #888892;
+    --text-faint: #55555f;
+    --power-bg: #3a1a10; --power-fg: #ff7a4a;
+    --speed-bg: #0d1f3a; --speed-fg: #4aadff;
+    --tech-bg: #0d2e1a; --tech-fg: #4adf8a;
+    --accent: #c8a96e;
+    --accent-dim: rgba(200,169,110,0.15);
+    --fire: #ff6b35; --water: #3b9dff; --thunder: #ffd93d;
+    --ice: #7fdbff; --dragon: #c77dff; --raw: #cccccc;
+    --poison: #b266ff; --burn: #ff6b35; --para: #ffd93d;
+    --sleep: #7fdbff; --blast: #ff4d6d; --bleed: #ff3333;
+    --dark: #9966cc;
+    --radius: 10px;
+    --radius-sm: 6px;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    min-height: 100vh;
+    min-height: 100dvh;
+    -webkit-tap-highlight-color: transparent;
+    overscroll-behavior: contain;
+  }
+
+  .sticky-top {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--bg-sticky);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    padding: 12px 16px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  header {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  header h1 {
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: .02em;
+    color: var(--accent);
+    white-space: nowrap;
+  }
+  header span {
+    font-size: 11px;
+    color: var(--text-faint);
+  }
+
+  .search-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  #search {
+    flex: 1;
+    min-width: 0;
+    padding: 10px 14px;
+    font-size: 16px; /* prevents iOS zoom */
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    outline: none;
+    transition: border-color .15s;
+  }
+  #search:focus { border-color: var(--accent); }
+  #search::placeholder { color: var(--text-faint); }
+
+  .fav-toggle {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: 18px;
+    transition: all .15s;
+    flex-shrink: 0;
+    color: var(--text-faint);
+  }
+  .fav-toggle.active {
+    background: var(--accent-dim);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .filters {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 10px;
+    scroll-snap-type: x proximity;
+  }
+  .filters::-webkit-scrollbar { display: none; }
+
+  .filter-btn {
+    font-size: 11px;
+    padding: 6px 12px;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all .15s;
+    white-space: nowrap;
+    flex-shrink: 0;
+    min-height: 32px;
+    scroll-snap-align: start;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .filter-btn:hover { border-color: var(--border-hover); color: var(--text); }
+  .filter-btn.active {
+    background: var(--accent-dim);
+    border-color: var(--accent);
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  .content { padding: 10px 12px 40px; }
+
+  .count {
+    font-size: 11px;
+    color: var(--text-faint);
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(560px, 1fr));
+    gap: 10px;
+  }
+  @media (max-width: 640px) {
+    .grid { grid-template-columns: 1fr; gap: 8px; }
+    .card { overflow: hidden; }
+    .monster-img { width: 90px; }
+    .monster-img img { width: 90px; }
+    .state-label { min-width: 70px; }
+    .transforms { padding: 8px 10px; }
+  }
+
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    display: flex;
+    gap: 14px;
+    transition: border-color .15s;
+    position: relative;
+  }
+  .card:hover { border-color: var(--border-hover); }
+  .card.fav { border-color: rgba(200,169,110,0.3); }
+
+  .fav-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    color: var(--text-faint);
+    opacity: 0.4;
+    transition: all .15s;
+    z-index: 2;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .fav-btn:hover, .card:hover .fav-btn { opacity: 0.8; }
+  .fav-btn.active { color: var(--accent); opacity: 1; }
+
+  .info { flex: 1; min-width: 0; }
+
+  .name {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 10px;
+    padding-right: 28px;
+  }
+  .name .type-label {
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--text-faint);
+    display: block;
+    margin-top: 2px;
+  }
+
+  .section-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    margin-bottom: 5px;
+  }
+
+  .transforms {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 12px;
+    padding: 10px 12px;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-sm);
+    border-left: 3px solid rgba(255,255,255,0.12);
+  }
+
+  .transform-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .state-label {
+    font-size: 13px;
+    color: var(--text-muted);
+    min-width: 90px;
+    flex-shrink: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 140px;
+  }
+
+  .atype {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 6px;
+    white-space: nowrap;
+  }
+  .atype img { width: 24px; height: 24px; object-fit: contain; }
+  .atype.power { background: var(--power-bg); color: var(--power-fg); }
+  .atype.speed { background: var(--speed-bg); color: var(--speed-fg); }
+  .atype.tech  { background: var(--tech-bg);  color: var(--tech-fg);  }
+
+  .elem-tag {
+    font-size: 13px;
+    font-weight: 500;
+    padding: 3px 9px;
+    border-radius: 5px;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .elem-tag .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .weak-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-bottom: 10px;
+  }
+
+  .ailment-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-bottom: 2px;
+  }
+
+  .ailment-tag {
+    font-size: 11px;
+    padding: 2px 7px;
+    border-radius: 4px;
+    background: var(--bg-secondary);
+    color: var(--text-faint);
+    border: 1px solid var(--border);
+    white-space: nowrap;
+  }
+
+  .monster-img {
+    width: 120px;
+    flex-shrink: 0;
+    border-radius: var(--radius-sm);
+    background: var(--bg-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    align-self: stretch;
+  }
+  .monster-img img {
+    width: 120px;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .no-results {
+    color: var(--text-muted);
+    font-size: 13px;
+    padding: 3rem 1rem;
+    text-align: center;
+    grid-column: 1/-1;
+  }
+
+  .habitat-label {
+    font-size: 9px;
+    color: var(--text-faint);
+    margin-top: 4px;
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+</style>
+</head>
+<body>
+
+<div class="sticky-top">
+  <header>
+    <h1>MHS3 Monster Reference</h1>
+    <span id="headerCount"></span>
+  </header>
+  <div class="search-row">
+    <input type="text" id="search" placeholder="Monster search…" autocomplete="off" spellcheck="false">
+    <button class="fav-toggle" id="favToggle" title="Show only favorites">★</button>
+  </div>
+  <div class="filters" id="filters"></div>
+</div>
+
+<div class="content">
+  <div class="count" id="count"></div>
+  <div class="grid" id="grid"></div>
+</div>
+
+<script>
+const B = 'https://img.game8.co/';
+const AT = {
+  power: B+'4428927/09dfad90fb3d25c13de3de5ac8f0ff99.png/show',
+  speed: B+'4428928/6e93ce4a21b950f5036b2afbb41fb5ce.png/show',
+  tech:  B+'4428926/baed44227f74f5301be9ee1b6dc1f7cc.png/show',
+};
+
+const ICONS = {
+  'Aknosom':B+'4440978/9e00a6e3bede5ba17f447db5bab4f53a.png/show',
+  'Almudron':B+'4441912/3ccc29251f55557ea04efdc1e1ed5381.png/show',
+  'Anjanath':B+'4431152/86f291388a89f46535a21174594642be.png/show',
+  'Aptonoth':B+'4438541/042ca0f1b0df047c5c464fbf2bfe5c2b.png/show',
+  'Arkveld':B+'4442069/107b6ae54a1f1f5f705998e2310c7bc8.png/show',
+  'Arzuros':B+'4440985/b43acec06d6ed795fb1360ff7172ef4f.png/show',
+  'Astalos':B+'4440722/69a24f1ca0232eb701ca59c0e7aea09a.png/show',
+  'Aurora Somnacanth':B+'4441856/f5c7678f0d6a0f267c75c4a78f154b88.png/show',
+  'Azure Rathalos':B+'4442850/01690cfa603796b16e41438298264a2e.png/show',
+  'Barioth':B+'4442071/1bb4556b0b481cf228a8714550240048.png/show',
+  'Barroth':B+'4441920/22f99756c0512bcc1226f41726a1e2bc.png/show',
+  'Barrel Felyne':B+'4430061/8802fa33532c7803b4a8c618c49020a9.png/show',
+  'Bishaten':B+'4440990/35eecb00592f05ea0294e265e11da526.png/show',
+  'Black Diablos':B+'4442480/d8ae28ff81b3655a9785f2eb01a59470.png/show',
+  'Black Gravios':B+'4441914/1d1ae3a7b7e8772dba9bfe58d4f39f63.png/show',
+  'Blango':B+'4442614/1d5ac23e3aaf9ba3d5643626edec849b.png/show',
+  'Blangonga':B+'4443624/7e9652b1b0491af37f5fdc8e7fd05ac1.png/show',
+  'Blood Orange Bishaten':B+'4441909/17d196997b753d00bfa7ac5afe39faf9.png/show',
+  'Bloodbath Diablos':B+'4442419/e1faee286c7be12187ac53a321871a85.png/show',
+  'Blue Yian Kut-Ku':B+'4441299/27a98ab55ae2bf79fe468cd0b876bbcf.png/show',
+  'Bnahabra':B+'4430047/877123380883af20ac922e3fc638c995.png/show',
+  'Boltreaver Astalos':B+'4440580/79f894906c3bff7bf308a08332bebe87.png/show',
+  'Brachydios':B+'4441476/e88e749f50dfdb88c7ff8461bb6cf9f9.png/show',
+  'Brute Tigrex':B+'4442067/7ac45014e2eeb948fc25d9711060f818.png/show',
+  'Canyne':B+'4440991/d907acfba8e4e3c795f0983a4c278c3f.png/show',
+  'Ceanataur':B+'4442287/9999ba4b08b1208a736f1970cd8f2c2a.png/show',
+  'Cephalos':B+'4442613/20194298473cc22d4cdd82513d9d7b87.png/show',
+  'Chatacabra':B+'4430994/454db4fb2637bf8761ba52407bfa9091.png/show',
+  'Deadeye Yian Garuga':B+'4442068/e3112707b5d1a5d423385301ca84987b.png/show',
+  'Deviljho':B+'4442630/a010d9ffb24a61e6c0cc150ce531de9f.png/show',
+  'Diablos':B+'4442493/7736fbd9e87986c6397f094fa2b58aa1.png/show',
+  'Dreadking Rathalos':B+'4442852/3759b93aa503f978e0f56ea0c1c7c672.png/show',
+  'Dreadqueen Rathian':B+'4440579/fc681b152bb5472a0234e5032c2b2984.png/show',
+  'Espinas':B+'4435584/0c06106dcf8a95ea231fb1fdbac6f51b.png/show',
+  'Feral Ajarakan':B+'4442534/e9f763d10ccf858eabd39768fc315ded.png/show',
+  'Feral Aknosom':B+'4441906/3d6332b888d47fdc21a99fbce58ca330.png/show',
+  'Feral Nerscylla':B+'4435556/f582e8ed77944996aed4678f3f5bde17.png/show',
+  'Feral Somnacanth':B+'4440988/eeaaab7f996bd58893c4ed7087f74b53.png/show',
+  'Feral Velocidrome':B+'4438609/8134509a3d2b06aabdc97b1e69ee56ff.png/show',
+  'Fulgur Anjanath':B+'4442753/97ba5bab953cfed73ae75a848a739370.png/show',
+  'Garangolm':B+'4441921/b180f1881006be49ec4ef23aa27d9777.png/show',
+  'Gargwa':B+'4440977/8161ccf7839476973cbb703ef2a774aa.png/show',
+  'Goss Harag':B+'4442756/fe389d742d855b55bf368ba960a9f461.png/show',
+  'Gravios':B+'4442748/46cc2dfd0d7fa62c9008a5dbb38cd055.png/show',
+  'Great Barrel Felyne':B+'4441908/cb66610e9b86fc96da5e48b19b29d0c0.png/show',
+  'Great Dracophage Bug':B+'4442754/028ed3d923e1d6e51cbafffcbf85b5c5.png/show',
+  'Great Izuchi':B+'4440983/d94003ccf8778fc07946e0a68bbf99f5.png/show',
+  'Great Thunderbug':B+'4441458/ccf3279007b248df20097aeee5f07899.png/show',
+  'Green Nargacuga':B+'4441919/f2b214b679b0e4fc172ec089755c5b55.png/show',
+  'Green Plesioth':B+'4440831/b3f1570ca35048dc80dbbeb22017b857.png/show',
+  'Grimclaw Tigrex':B+'4442074/907bba2f81ce4387dc8379dc1af16a36.png/show',
+  'Gypceros':B+'4431053/b15d2742e0da4e90078ffa6b6203d98e.png/show',
+  'Glavenus':B+'4443623/03b535bd6e4e94e5c6dc016760a68b9c.png/show',
+  'Hellblade Glavenus':B+'4442796/f46c7ee4cbc058cbdb68a532492eed11.png/show',
+  'Ivory Lagiacrus':B+'4440830/9ec9aeb30114af7f3663e0d39388586b.png/show',
+  'Izuchi':B+'4440982/ef6aad0f25ec01452f4e0923945dc03f.png/show',
+  'Jade Barroth':B+'4442747/9443fcf78bd83647b983fee678a9f491.png/show',
+  'Khezu':B+'4441916/cb1c4389a86876fadf5f680ac7f5e91f.png/show',
+  'Legiana':B+'4442501/1ba514a955e6c568f320eb267448e3c2.png/show',
+  'Kula-Ya-Ku':B+'4441902/63a56ed126dfdb91c8db39d1ec2f93af.png/show',
+  'Lagiacrus':B+'4438490/b7480c885f0d7a9585aaadf8eed4f5b9.png/show',
+  'Ludroth':B+'4431181/53389e407138bef05c7a8e65720e6fa6.png/show',
+  'Lunagaron':B+'4442584/6d9d552a619f10649685d28c968ac63f.png/show',
+  'Magnamalo':B+'4440986/d889e7190d74bddd41e8f720a9e73916.png/show',
+  'Malzeno':B+'4442494/7c633f99fe673a82856e637fc25e06d7.png/show',
+  'Mizutsune':B+'4441801/354507a56db4582a5d1d4b4ba476e8b0.png/show',
+  'Namielle':B+'4441664/453686d0269250363bf7d494ecd2bcf6.png/show',
+  'Nargacuga':B+'4441917/cfc849d9a6a1028cff596ce128854668.png/show',
+  'Nerscylla':B+'4430120/adf5774eecbc28a6fc215eee4656b7de.png/show',
+  'Nibelsnarf':B+'4442088/13cdd452b5faff114f7bcd72e7f23725.png/show',
+  'Odogaron':B+'4442598/c83ee3dca57ed79a65132f5dff72da39.png/show',
+  'Paolumu':B+'4429669/a60a8e410a9f644fdd334b3b83e2c8bb.png/show',
+  'Pink Rathian':B+'4438491/ac7da0176083e6e4a7c825195038ded6.png/show',
+  'Plesioth':B+'4433642/b2fd108128aa63edb50df86fdb66b07a.png/show',
+  'Pukei-Pukei':B+'4441303/221c75b2a96376466c65be546580fded.png/show',
+  'Purple Gypceros':B+'4431128/63e194cf2c9479b780b800bd0ad690f7.png/show',
+  'Purple Ludroth':B+'4440984/a751d563daecb2918034db00a79182ae.png/show',
+  'Rachnoid':B+'4442750/680616f09be30b9378b7d7e30ab257f0.png/show',
+  'Rakna-Kadaki':B+'4442710/ec0f0cbc63982c0099a7434b5877886a.png/show',
+  'Ratha':B+'4429673/63df721e85121073bf3b06aa7683abc0.png/show',
+  'Rathalos':B+'4442746/3a79a32786dfaa0ff4b8bc11323ae307.png/show',
+  'Rathian':B+'4430309/dda2dc58a269d5b9762a712f3e63b064.png/show',
+  'Red Khezu':B+'4441915/6ca8207c71c244be7681c27452bcb80e.png/show',
+  'Remobra':B+'4442752/664f08738bcefab8560fce6db1c7f687.png/show',
+  'Rey Dau':B+'4442503/a3c81f239ca142b7f3e05cf9751aeb5d.png/show',
+  'Royal Ludroth':B+'4431191/be921cab61be720bd5759209e0f4f648.png/show',
+  'Sand Barioth':B+'4442066/902c4c4f2a1f44dd856d51372d513ad3.png/show',
+  'Seregios':B+'4441913/65302fc0363b2bfef805296819d2df33.png/show',
+  'Silverwind Nargacuga':B+'4441918/96a09972e435f204e98eac68f65a47c7.png/show',
+  'Slagtoth':B+'4442745/c323982669a670e6894b754b2396e1e9.png/show',
+  'Somnacanth':B+'4440989/63952cd8f063107d57a99b12ad1d4895.png/show',
+  'Soulseer Mizutsune':B+'4442012/03ac63feae845c10908226c881cd3672.png/show',
+  'Stygian Zinogre':B+'4442065/a68df6f6c04fc3370c98c466174d0cbe.png/show',
+  'Tetranadon':B+'4440987/e15136dc02f7eb40b7342bbbe23b4759.png/show',
+  'Thunderlord Zinogre':B+'4442070/c7ac31c2753a8553b8e85b2cd070d905.png/show',
+  'Tigrex':B+'4441958/44716916cefb7762ec94af874d9449d4.png/show',
+  'Tobi-Kadachi':B+'4429672/eb923df6614952b706a01a6ed601f923.png/show',
+  'Velkhana':B+'3641340/9f582a0ee916ff86ff3066e1c93ad271.png/show',
+  'Velocidrome':B+'4430058/269d82e9758c278364f54db33bdacdcf.png/show',
+  'Velociprey':B+'4430055/b4991ffeafdfda36c165c4c3cacae0df.png/show',
+  'Yama Tsukami':B+'4441860/75cb7ea6dbc3ac4ebf4cda51508ffad9.png/show',
+  'Yian Garuga':B+'4441304/7c61e07e0ed239bc395d0a20c41f9974.png/show',
+  'Yian Kut-Ku':B+'4429674/433fe7b0f37825d90b81403ba6453007.png/show',
+  'Zinogre':B+'4441970/344eb0928705e1f53c4a1bb8ecd3c273.png/show',
+};
+
+// Icon fallbacks: variant -> base monster
+const ICON_FALLBACKS = {
+  'Exotic Velocidrome':'Velocidrome','Feral Velocidrome':'Velocidrome',
+  'Feral Great Izuchi':'Great Izuchi','Feral Yian Kut-Ku':'Yian Kut-Ku',
+  'Feral Gypceros':'Gypceros','Feral Aknosom':'Aknosom',
+  'Feral Bishaten':'Bishaten','Feral Blangonga':'Blango',
+  'Feral Ajarakan':'Feral Ajarakan','Feral Chatacabra':'Chatacabra',
+  'Feral Tetranadon':'Tetranadon','Shrouded Nerscylla':'Nerscylla',
+  'Feral Nerscylla':'Feral Nerscylla','Feral Rakna-Kadaki':'Rakna-Kadaki',
+  'Feral Barroth':'Jade Barroth','Feral Brachydios':'Brachydios',
+  'Feral Deviljho':'Deviljho','Honed Glavenus':'Hellblade Glavenus',
+  'Feral Glavenus':'Hellblade Glavenus','Feral Somnacanth':'Feral Somnacanth',
+  'Exotic Nibelsnarf':'Nibelsnarf','Soulseer Mizutsune':'Soulseer Mizutsune',
+  'Feral Tobi-Kadachi':'Tobi-Kadachi','Ebony Odogaron':'Odogaron',
+  'Feral Magnamalo':'Magnamalo','Feral Paolumu':'Paolumu',
+  'Feral Legiana':'Legiana','Exotic Legiana':'Legiana',
+  'Feral Espinas':'Espinas','Feral Gravios':'Gravios',
+  'Battle-Bound Lunagaron':'Lunagaron','Battle-Bound Azure Rathalos':'Azure Rathalos',
+  'Yama Tsukami (Crystallized)':'Yama Tsukami',
+  'Wind Serpent Ibushi':'Yama Tsukami','Thunder Serpent Narwa':'Namielle',
+  'Invasive Yian Garuga':'Yian Garuga','Invasive Arzuros':'Arzuros',
+  'Invasive Shogun Ceanataur':'Ceanataur','Invasive Nerscylla':'Nerscylla',
+  'Invasive Plesioth':'Plesioth','Invasive Khezu':'Khezu',
+  'Invasive Odogaron':'Odogaron','Invasive Diablos':'Diablos',
+  'Invasive Seregios':'Seregios',
+};
+
+function getIcon(name) {
+  if (ICONS[name]) return ICONS[name];
+  const fb = ICON_FALLBACKS[name];
+  if (fb && ICONS[fb]) return ICONS[fb];
+  // Try base name
+  const base = name.replace(/^(Feral|Exotic|Invasive|Honed|Battle-Bound|Shrouded) /, '');
+  if (ICONS[base]) return ICONS[base];
+  return null;
+}
+
+// p=power, s=speed, t=technical
+const MONSTERS = [
+  // ─── Bird Wyverns ───
+  {name:'Velociprey',type:'Bird Wyvern',transforms:[{s:'Normal',a:'s'}],weak:'Ice x2, Fire x1, Thunder x1',ailment:'All'},
+  {name:'Velocidrome',type:'Bird Wyvern',transforms:[{s:'Normal',a:'s'},{s:'Enraged',a:'p'}],weak:'Ice x2, Fire x1',ailment:'Poison x2, Blast x2, Bleed x2'},
+  {name:'Exotic Velocidrome',type:'Bird Wyvern',transforms:[{s:'Normal',a:'s'},{s:'Enraged',a:'p'}],weak:'Ice x2, Fire x1',ailment:'Poison x2, Blast x2, Bleed x2'},
+  {name:'Feral Velocidrome',type:'Bird Wyvern',transforms:[{s:'Normal',a:'s'},{s:'Enraged',a:'p'}],weak:'Water x2, Ice x1',ailment:'Poison x2, Blast x2, Bleed x2',elem:'Fire'},
+  {name:'Izuchi',type:'Bird Wyvern',transforms:[{s:'Normal',a:'s'}],weak:'Water x2, Thunder x2',ailment:'Poison x2, Para x2, Sleep x2, Dark x2'},
+  {name:'Great Izuchi',type:'Bird Wyvern',transforms:[{s:'Normal',a:'s'},{s:'Enraged',a:'p'}],weak:'Thunder x2, Water x1',ailment:'Poison x2, Para x2, Sleep x2, Dark x2'},
+  {name:'Feral Great Izuchi',type:'Bird Wyvern',transforms:[{s:'Normal',a:'s'},{s:'Enraged',a:'p'}],weak:'Thunder x2, Ice x1',ailment:'Poison x2, Para x2, Sleep x2, Dark x2'},
+  {name:'Kula-Ya-Ku',type:'Bird Wyvern',transforms:[{s:'Normal',a:'t'},{s:'Rock Prep',a:'p'}],weak:'Water x2, Ice x1',ailment:'Blast x2, Dark x2'},
+  {name:'Yian Kut-Ku',type:'Bird Wyvern',transforms:[{s:'Normal',a:'t'},{s:'Enraged',a:'s'}],weak:'Ice x2, Thunder x1',ailment:'All except Burn x1',elem:'Fire'},
+  {name:'Blue Yian Kut-Ku',type:'Bird Wyvern',transforms:[{s:'Normal',a:'t'},{s:'Enraged',a:'s'}],weak:'Water x2, Thunder x1',ailment:'All except Burn x1',elem:'Fire'},
+  {name:'Feral Yian Kut-Ku',type:'Bird Wyvern',transforms:[{s:'Normal',a:'t'},{s:'Enraged',a:'s'}],weak:'Ice x2, Thunder x1, Dragon x1',ailment:'Para x1, Sleep x1, Blast x1, Bleed x1, Dark x1',elem:'Fire'},
+  {name:'Gypceros',type:'Bird Wyvern',transforms:[{s:'Normal',a:'p'},{s:'Enraged',a:'t'}],weak:'Fire x2, Ice x1',ailment:'Burn x1, Sleep x1, Blast x1'},
+  {name:'Purple Gypceros',type:'Bird Wyvern',transforms:[{s:'Normal',a:'p'},{s:'Enraged',a:'t'}],weak:'Thunder x2, Water x1',ailment:'Burn x1, Sleep x1, Blast x1'},
+  {name:'Feral Gypceros',type:'Bird Wyvern',transforms:[{s:'Normal',a:'p'},{s:'Enraged',a:'t'}],weak:'Fire x2, Ice x1',ailment:'Burn x1, Sleep x1, Blast x1',elem:'Water'},
+  {name:'Aknosom',type:'Bird Wyvern',transforms:[{s:'Normal',a:'t'},{s:'Enraged',a:'p'}],weak:'Water x2, Thunder x1',ailment:'Dark x2',elem:'Fire'},
+  {name:'Feral Aknosom',type:'Bird Wyvern',transforms:[{s:'Normal',a:'t'},{s:'Enraged',a:'p'}],weak:'Thunder x2, Water x1',ailment:'Para x2, Dark x2',elem:'Ice'},
+  {name:'Pukei-Pukei',type:'Bird Wyvern',transforms:[{s:'Normal',a:'t'},{s:'Munch',a:'s'},{s:'Crunch',a:'p'}],weak:'Thunder x2, Ice x1',ailment:'Para x2, Sleep x2'},
+  {name:'Yian Garuga',type:'Bird Wyvern',transforms:[{s:'Normal',a:'t'},{s:'Enraged',a:'p'}],weak:'Water x2, Ice x2',ailment:'Blast x2',elem:'Fire'},
+  {name:'Deadeye Yian Garuga',type:'Bird Wyvern',transforms:[{s:'Normal',a:'t'}],weak:'—',ailment:'—'},
+  {name:'Invasive Yian Garuga',type:'Bird Wyvern',transforms:[{s:'Normal',a:'t'},{s:'Enraged',a:'p'},{s:'Invading',a:'p'}],weak:'Water x2, Dragon x1',ailment:'Blast x2',elem:'Fire'},
+
+  // ─── Fanged Beasts ───
+  {name:'Arzuros',type:'Fanged Beast',transforms:[{s:'Normal',a:'p'},{s:'Enraged',a:'t'}],weak:'Fire x2, Ice x1',ailment:'All x1'},
+  {name:'Invasive Arzuros',type:'Fanged Beast',transforms:[{s:'Normal',a:'p'},{s:'Enraged',a:'s'},{s:'Invading',a:'t'}],weak:'Ice x2, Fire x1',ailment:'All x1'},
+  {name:'Bishaten',type:'Fanged Beast',transforms:[{s:'Normal',a:'t'},{s:'Balancing',a:'s'}],weak:'Ice x2, Fire x1',ailment:'Burn x2'},
+  {name:'Blood Orange Bishaten',type:'Fanged Beast',transforms:[{s:'Normal',a:'s'},{s:'Enraged',a:'p'}],weak:'Water x2, Thunder x1',ailment:'Dark x2',elem:'Fire'},
+  {name:'Feral Bishaten',type:'Fanged Beast',transforms:[{s:'Normal',a:'t'},{s:'Balancing',a:'s'}],weak:'Ice x2, Fire x1',ailment:'Poison x1, Burn x1, Blast x1, Bleed x1, Dark x1',elem:'Thunder'},
+  {name:'Blango',type:'Fanged Beast',transforms:[{s:'Normal',a:'p'}],weak:'Fire x2',ailment:'All x2',elem:'Ice'},
+  {name:'Blangonga',type:'Fanged Beast',transforms:[{s:'Normal',a:'p'},{s:'Enraged',a:'s'}],weak:'Fire x2, Thunder x1',ailment:'All x2',elem:'Ice'},
+  {name:'Feral Blangonga',type:'Fanged Beast',transforms:[{s:'Normal',a:'p'},{s:'Enraged',a:'s'}],weak:'Fire x2, Water x1',ailment:'Burn x2',elem:'Thunder'},
+  {name:'Garangolm',type:'Fanged Beast',transforms:[{s:'Normal',a:'p'},{s:'Lava Mantle',a:'s'},{s:'Moss Mantle',a:'t'}],weak:'Thunder x2, Ice x1',ailment:'Poison x2'},
+  {name:'Ajarakan',type:'Fanged Beast',transforms:[{s:'Normal',a:'t'},{s:'Enraged',a:'p'}],weak:'Water x2, Thunder x1',ailment:'Poison x2, Dark x2',elem:'Fire'},
+  {name:'Feral Ajarakan',type:'Fanged Beast',transforms:[{s:'Normal',a:'t'},{s:'Overheated',a:'p'}],weak:'Ice x2, Water x1',ailment:'Poison x2, Dark x2',elem:'Fire'},
+  {name:'Goss Harag',type:'Fanged Beast',transforms:[{s:'Normal',a:'p'},{s:'Frost Knuckles',a:'t'},{s:'Frost Blade',a:'s'}],weak:'Fire x2, Thunder x1',ailment:'Burn x2, Dark x2',elem:'Ice'},
+  {name:'Canyne',type:'Fanged Beast',transforms:[{s:'Normal',a:'s'}],weak:'Water x2, Thunder x1',ailment:'—'},
+
+  // ─── Amphibians ───
+  {name:'Chatacabra',type:'Amphibian',transforms:[{s:'Normal',a:'p'},{s:'Rock Mantle',a:'t'}],weak:'Thunder x2, Ice x1',ailment:'Dark x2'},
+  {name:'Feral Chatacabra',type:'Amphibian',transforms:[{s:'Normal',a:'p'},{s:'Rock Mantle',a:'t'}],weak:'Ice x2, Water x1',ailment:'Dark x2',elem:'Thunder'},
+  {name:'Tetranadon',type:'Amphibian',transforms:[{s:'Normal',a:'p'},{s:'Stuffed',a:'t'}],weak:'Thunder x2, Fire x1',ailment:'Dark x2',elem:'Water'},
+  {name:'Feral Tetranadon',type:'Amphibian',transforms:[{s:'Normal',a:'p'},{s:'Stuffed',a:'t'}],weak:'Thunder x2',ailment:'Poison x2, Dark x2',elem:'Water'},
+
+  // ─── Carapaceons ───
+  {name:'Ceanataur',type:'Carapaceon',transforms:[{s:'Normal',a:'p'}],weak:'Thunder x2, Fire x1',ailment:'Burn x2, Para x2, Sleep x2, Dark x2',elem:'Water'},
+  {name:'Shogun Ceanataur',type:'Carapaceon',transforms:[{s:'Shell (Skull)',a:'s'},{s:'No Shell',a:'t'},{s:'Shell (Sea)',a:'p'}],weak:'Thunder x2, Fire x1',ailment:'Burn x1, Para x1, Blast x1, Dark x1',elem:'Water'},
+  {name:'Invasive Shogun Ceanataur',type:'Carapaceon',transforms:[{s:'Shell (Skull)',a:'p'},{s:'Invading',a:'s'},{s:'No Shell',a:'t'}],weak:'Thunder x2, Ice x2 (no shell)',ailment:'Poison x1, Burn x1, Blast x1',elem:'Water'},
+
+  // ─── Temnocerans ───
+  {name:'Nerscylla',type:'Temnoceran',transforms:[{s:'Normal',a:'t'},{s:'Enraged',a:'s'}],weak:'Fire x2, Thunder x1',ailment:'Burn x2'},
+  {name:'Shrouded Nerscylla',type:'Temnoceran',transforms:[{s:'Normal',a:'t'},{s:'Enraged',a:'s'}],weak:'Fire x2, Ice x1',ailment:'Burn x2'},
+  {name:'Feral Nerscylla',type:'Temnoceran',transforms:[{s:'Normal',a:'t'},{s:'Enraged',a:'s'}],weak:'Water x2, Ice x1',ailment:'Dark x2',elem:'Fire'},
+  {name:'Invasive Nerscylla',type:'Temnoceran',transforms:[{s:'Normal',a:'t'},{s:'Enraged',a:'p'},{s:'Special',a:'s'}],weak:'Fire x2, Thunder x1',ailment:'Blast x1, Bleed x1, Dark x1'},
+  {name:'Rachnoid',type:'Temnoceran',transforms:[{s:'Normal',a:'t'}],weak:'Water x2, Ice x2',ailment:'Dark x2',elem:'Fire'},
+  {name:'Rakna-Kadaki',type:'Temnoceran',transforms:[{s:'Web (Legs)',a:'t'},{s:'No Web',a:'t'},{s:'Web (Cocoon)',a:'s'}],weak:'Ice x2, Water x1',ailment:'Dark x2',elem:'Fire'},
+  {name:'Feral Rakna-Kadaki',type:'Temnoceran',transforms:[{s:'Web (Legs)',a:'t'},{s:'No Web',a:'t'},{s:'Web (Cocoon)',a:'s'}],weak:'Thunder x2, Dragon x1',ailment:'Dark x2',elem:'Water'},
+
+  // ─── Brute Wyverns ───
+  {name:'Barroth',type:'Brute Wyvern',transforms:[{s:'Normal',a:'s'},{s:'Mud Mantle',a:'t'}],weak:'Fire x2, Ice x1',ailment:'Dark x2'},
+  {name:'Jade Barroth',type:'Brute Wyvern',transforms:[{s:'Normal',a:'p'},{s:'Snow Mantle',a:'t'}],weak:'Fire x2, Thunder x1',ailment:'Burn x2',elem:'Ice'},
+  {name:'Feral Barroth',type:'Brute Wyvern',transforms:[{s:'Normal',a:'s'},{s:'Mud Mantle',a:'t'}],weak:'Fire x2, Ice x1',ailment:'Burn x2, Dark x2',elem:'Water'},
+  {name:'Anjanath',type:'Brute Wyvern',transforms:[{s:'Normal',a:'p'},{s:'Condense Heat',a:'t'}],weak:'Water x2, Ice x2',ailment:'Dark x2',elem:'Fire'},
+  {name:'Fulgur Anjanath',type:'Brute Wyvern',transforms:[{s:'Normal',a:'p'},{s:'Elec. Charge',a:'s'},{s:'High-Voltage',a:'s'}],weak:'Ice x2, Water x1',ailment:'Dark x2',elem:'Thunder'},
+  {name:'Glavenus',type:'Brute Wyvern',transforms:[{s:'Normal',a:'s'},{s:'Heat (Throat)',a:'t'},{s:'Heat (Tail)',a:'p'}],weak:'Water x2, Ice x1',ailment:'Sleep x2',elem:'Fire'},
+  {name:'Hellblade Glavenus',type:'Brute Wyvern',transforms:[{s:'Normal',a:'s'}],weak:'Water x2, Thunder x1, Ice x1',ailment:'—',elem:'Fire'},
+  {name:'Honed Glavenus',type:'Brute Wyvern',transforms:[{s:'Normal',a:'s'},{s:'Heat (Throat)',a:'t'},{s:'Heat (Tail)',a:'p'}],weak:'Water x2, Dragon x2',ailment:'Sleep x2',elem:'Fire'},
+  {name:'Feral Glavenus',type:'Brute Wyvern',transforms:[{s:'Normal',a:'s'},{s:'Enraged',a:'t'},{s:'Heat (Tail)',a:'p'}],weak:'Water x2, Dragon x1',ailment:'Sleep x2',elem:'Ice'},
+  {name:'Brachydios',type:'Brute Wyvern',transforms:[{s:'Normal',a:'p'},{s:'Slime Active',a:'s'},{s:'Slime Depleted',a:'p'}],weak:'Water x2, Ice x1',ailment:'Poison x1, Para x1, Dark x1'},
+  {name:'Feral Brachydios',type:'Brute Wyvern',transforms:[{s:'Normal',a:'p'},{s:'Slime Active',a:'s'},{s:'Slime Depleted',a:'p'}],weak:'Thunder x2, Water x1',ailment:'Poison x1, Para x1, Dark x1',elem:'Dragon'},
+  {name:'Deviljho',type:'Brute Wyvern',transforms:[{s:'Normal',a:'p'},{s:'Enraged',a:'s'},{s:'Starving',a:'p'}],weak:'Thunder x2, Dragon x2',ailment:'Bleed x2, Dark x2',elem:'Dragon'},
+  {name:'Feral Deviljho',type:'Brute Wyvern',transforms:[{s:'Normal',a:'p'},{s:'Enraged',a:'s'},{s:'Starving',a:'p'}],weak:'Water x2, Ice x1',ailment:'Blast x2, Para x1, Bleed x1, Dark x1',elem:'Dragon'},
+
+  // ─── Piscine Wyverns ───
+  {name:'Cephalos',type:'Piscine Wyvern',transforms:[{s:'Normal',a:'p'}],weak:'Thunder x2, Fire x1',ailment:'Poison x2, Para x2, Sleep x2, Dark x2'},
+  {name:'Plesioth',type:'Piscine Wyvern',transforms:[{s:'Normal',a:'s'},{s:'Enraged',a:'p'}],weak:'Thunder x2, Fire x1',ailment:'Para x2, Dark x2',elem:'Water'},
+  {name:'Green Plesioth',type:'Piscine Wyvern',transforms:[{s:'Normal',a:'s'},{s:'Enraged',a:'t'}],weak:'Thunder x2, Fire x1',ailment:'Para x2, Dark x2',elem:'Water'},
+  {name:'Invasive Plesioth',type:'Piscine Wyvern',transforms:[{s:'Normal',a:'t'},{s:'Enraged',a:'p'},{s:'Invading',a:'t'}],weak:'Thunder x2, Fire x1',ailment:'Burn x1',elem:'Water'},
+
+  // ─── Leviathans ───
+  {name:'Ludroth',type:'Leviathan',transforms:[{s:'Normal',a:'p'}],weak:'Fire x2, Thunder x1',ailment:'Poison x2, Burn x2, Para x2, Blast x2',elem:'Water'},
+  {name:'Royal Ludroth',type:'Leviathan',transforms:[{s:'Normal',a:'p'},{s:'Enraged',a:'t'}],weak:'Fire x2, Thunder x1',ailment:'Burn x2, Blast x2',elem:'Water'},
+  {name:'Purple Ludroth',type:'Leviathan',transforms:[{s:'Normal',a:'p'},{s:'Enraged',a:'t'}],weak:'Fire x2, Thunder x1',ailment:'Burn x2, Blast x2',elem:'Water'},
+  {name:'Nibelsnarf',type:'Leviathan',transforms:[{s:'Normal',a:'t'},{s:'Enraged',a:'s'},{s:'Camouflaged',a:'s'}],weak:'Ice x2, Thunder x1',ailment:'Poison x1, Para x1, Sleep x1, Bleed x1',elem:'Water'},
+  {name:'Exotic Nibelsnarf',type:'Leviathan',transforms:[{s:'Normal',a:'t'},{s:'Camouflaged',a:'t'}],weak:'Fire x2, Thunder x1',ailment:'Burn x2',elem:'Ice'},
+  {name:'Somnacanth',type:'Leviathan',transforms:[{s:'Normal',a:'t'},{s:'Balancing',a:'s'},{s:'Storing Power',a:'s'}],weak:'Thunder x2, Fire x1',ailment:'Burn x2',elem:'Water'},
+  {name:'Aurora Somnacanth',type:'Leviathan',transforms:[{s:'Normal',a:'t'},{s:'Enraged',a:'s'}],weak:'Fire x2, Thunder x1',ailment:'Burn x2, Dark x2',elem:'Ice'},
+  {name:'Feral Somnacanth',type:'Leviathan',transforms:[{s:'Normal',a:'t'},{s:'Balancing',a:'s'},{s:'Storing Power',a:'s'}],weak:'Ice x2, Fire x1',ailment:'Poison x1, Blast x1, Bleed x1, Dark x1',elem:'Thunder'},
+  {name:'Lagiacrus',type:'Leviathan',transforms:[{s:'Normal',a:'p'},{s:'Enraged',a:'s'},{s:'Electrify',a:'t'}],weak:'Fire x2, Dragon x2',ailment:'All except Para x1',elem:'Thunder'},
+  {name:'Ivory Lagiacrus',type:'Leviathan',transforms:[{s:'Normal',a:'s'},{s:'Enraged',a:'p'},{s:'Electrify',a:'t'}],weak:'Dragon x2, Fire x1',ailment:'All except Para x1',elem:'Thunder'},
+  {name:'Mizutsune',type:'Leviathan',transforms:[{s:'Normal',a:'t'},{s:'Bubble Mantle',a:'s'}],weak:'Thunder x2, Dragon x1',ailment:'Blast x1',elem:'Water'},
+  {name:'Soulseer Mizutsune',type:'Leviathan',transforms:[{s:'Normal',a:'s'}],weak:'Thunder x2, Fire x1, Dragon x1',ailment:'—',elem:'Water'},
+  {name:'Almudron',type:'Leviathan',transforms:[{s:'Normal',a:'p'},{s:'Enraged',a:'t'},{s:'Large Mudbulb',a:'s'}],weak:'Fire x2, Ice x1',ailment:'Burn x2',elem:'Water'},
+
+  // ─── Fanged Wyverns ───
+  {name:'Tobi-Kadachi',type:'Fanged Wyvern',transforms:[{s:'Normal',a:'s'},{s:'Elec. Charge',a:'t'}],weak:'Water x2, Fire x2',ailment:'Poison x2, Dark x2',elem:'Thunder'},
+  {name:'Feral Tobi-Kadachi',type:'Fanged Wyvern',transforms:[{s:'Normal',a:'s'},{s:'Elec. Charge',a:'t'}],weak:'Fire x2, Water x1',ailment:'Poison x2, Dark x2',elem:'Thunder'},
+  {name:'Odogaron',type:'Fanged Wyvern',transforms:[{s:'Normal',a:'s'},{s:'Frenzied',a:'p'},{s:'Starving',a:'s'}],weak:'Ice x2, Thunder x1',ailment:'Para x2'},
+  {name:'Ebony Odogaron',type:'Fanged Wyvern',transforms:[{s:'Normal',a:'s'},{s:'Frenzied',a:'p'},{s:'Starving',a:'s'}],weak:'Fire x1, Water x1, Thunder x1, Ice x1',ailment:'Poison x2, Para x2',elem:'Dragon'},
+  {name:'Invasive Odogaron',type:'Fanged Wyvern',transforms:[{s:'Normal',a:'s'},{s:'Invading',a:'t'},{s:'Frenzied',a:'p'},{s:'Starving',a:'s'}],weak:'Ice x2, Thunder x1',ailment:'Para x2'},
+  {name:'Zinogre',type:'Fanged Wyvern',transforms:[{s:'Normal',a:'s'},{s:'Elec. Charge',a:'t'},{s:'Supercharge',a:'p'}],weak:'Ice x2, Water x1',ailment:'Dark x2',elem:'Thunder'},
+  {name:'Stygian Zinogre',type:'Fanged Wyvern',transforms:[{s:'Normal',a:'t'},{s:'Dragon Shroud',a:'s'},{s:'Battle Shroud',a:'p'}],weak:'Thunder x2, Water x1, Ice x1',ailment:'Blast x2',elem:'Dragon'},
+  {name:'Thunderlord Zinogre',type:'Fanged Wyvern',transforms:[{s:'Normal',a:'p'}],weak:'Ice x2, Fire x1, Water x1',ailment:'—',elem:'Thunder'},
+  {name:'Lunagaron',type:'Fanged Wyvern',transforms:[{s:'Normal',a:'s'},{s:'Enraged',a:'p'}],weak:'Fire x2, Thunder x1',ailment:'Burn x2, Dark x2',elem:'Ice'},
+  {name:'Battle-Bound Lunagaron',type:'Fanged Wyvern',transforms:[{s:'Normal',a:'s'},{s:'Enraged',a:'p'},{s:'Unleashed',a:'p'}],weak:'Fire x2, Thunder x1',ailment:'Burn x2, Dark x2',elem:'Ice'},
+  {name:'Magnamalo',type:'Fanged Wyvern',transforms:[{s:'Normal',a:'s'},{s:'Hellfire Mantle',a:'p'},{s:'Hellfire Crit.',a:'t'}],weak:'Water x2, Thunder x1',ailment:'Dark x2'},
+  {name:'Feral Magnamalo',type:'Fanged Wyvern',transforms:[{s:'Normal',a:'s'},{s:'Hellfire Mantle',a:'p'},{s:'Hellfire Crit.',a:'t'}],weak:'Water x2, Ice x1',ailment:'Dark x2',elem:'Fire'},
+
+  // ─── Flying Wyverns ───
+  {name:'Paolumu',type:'Flying Wyvern',transforms:[{s:'Normal',a:'t'},{s:'Airborne',a:'s'}],weak:'Fire x2, Thunder x1',ailment:'Burn x2, Dark x2'},
+  {name:'Feral Paolumu',type:'Flying Wyvern',transforms:[{s:'Normal',a:'t'},{s:'Airborne',a:'s'}],weak:'Fire x2',ailment:'Burn x2, Dark x2',elem:'Thunder'},
+  {name:'Khezu',type:'Flying Wyvern',transforms:[{s:'Normal',a:'t'},{s:'Enraged',a:'p'}],weak:'Fire x2',ailment:'Poison x1, Burn x1, Blast x1',elem:'Thunder'},
+  {name:'Red Khezu',type:'Flying Wyvern',transforms:[{s:'Normal',a:'t'},{s:'Elec. Charge',a:'p'}],weak:'Water x2',ailment:'Poison x1, Burn x1, Blast x1',elem:'Thunder'},
+  {name:'Invasive Khezu',type:'Flying Wyvern',transforms:[{s:'Normal',a:'t'},{s:'Enraged',a:'p'},{s:'Invading',a:'p'}],weak:'Fire x2',ailment:'Para x2',elem:'Thunder'},
+  {name:'Rathian',type:'Flying Wyvern',transforms:[{s:'Normal',a:'s'},{s:'Enraged',a:'p'}],weak:'Dragon x2, Thunder x1',ailment:'Para x1, Sleep x1, Blast x1, Bleed x1, Dark x1',elem:'Fire'},
+  {name:'Pink Rathian',type:'Flying Wyvern',transforms:[{s:'Normal',a:'s'},{s:'Enraged',a:'p'}],weak:'Dragon x2, Thunder x1',ailment:'Para x1, Sleep x1, Blast x1, Bleed x1, Dark x1',elem:'Fire'},
+  {name:'Dreadqueen Rathian',type:'Flying Wyvern',transforms:[{s:'Normal',a:'s'}],weak:'Water x1, Thunder x1, Ice x1',ailment:'—',elem:'Fire'},
+  {name:'Legiana',type:'Flying Wyvern',transforms:[{s:'Normal',a:'s'},{s:'Enraged',a:'p'},{s:'Airborne',a:'t'}],weak:'Thunder x2, Fire x1',ailment:'Burn x2',elem:'Ice'},
+  {name:'Exotic Legiana',type:'Flying Wyvern',transforms:[{s:'Normal',a:'s'},{s:'Airborne',a:'t'}],weak:'Thunder x2, Fire x1',ailment:'Burn x2',elem:'Ice'},
+  {name:'Feral Legiana',type:'Flying Wyvern',transforms:[{s:'Normal',a:'s'},{s:'Enraged',a:'p'},{s:'Airborne',a:'t'}],weak:'Thunder x2, Fire x1',ailment:'Burn x2',elem:'Ice'},
+  {name:'Barioth',type:'Flying Wyvern',transforms:[{s:'Normal',a:'t'},{s:'Enraged',a:'s'}],weak:'Fire x2, Thunder x1',ailment:'Burn x2, Blast x2',elem:'Ice'},
+  {name:'Sand Barioth',type:'Flying Wyvern',transforms:[{s:'Normal',a:'t'},{s:'Enraged',a:'s'}],weak:'Ice x2, Thunder x1',ailment:'Para x1, Sleep x1, Blast x1, Bleed x1'},
+  {name:'Nargacuga',type:'Flying Wyvern',transforms:[{s:'Normal',a:'s'},{s:'Enraged',a:'t'}],weak:'Thunder x2, Fire x1',ailment:'Poison x2, Dark x2'},
+  {name:'Green Nargacuga',type:'Flying Wyvern',transforms:[{s:'Normal',a:'s'},{s:'Enraged',a:'p'}],weak:'Thunder x2, Fire x1',ailment:'Poison x2, Dark x2'},
+  {name:'Silverwind Nargacuga',type:'Flying Wyvern',transforms:[{s:'Normal',a:'s'}],weak:'Thunder x2, Fire x1, Dragon x1',ailment:'—'},
+  {name:'Astalos',type:'Flying Wyvern',transforms:[{s:'Normal',a:'s'},{s:'Bolt',a:'p'}],weak:'Ice x2, Water x2',ailment:'Blast x2, Dark x2',elem:'Thunder'},
+  {name:'Boltreaver Astalos',type:'Flying Wyvern',transforms:[{s:'Normal',a:'t'}],weak:'Fire x1, Water x1',ailment:'—',elem:'Thunder'},
+  {name:'Rathalos',type:'Flying Wyvern',transforms:[{s:'Normal',a:'p'},{s:'Enraged',a:'t'},{s:'Airborne',a:'s'}],weak:'Dragon x2, Thunder x1',ailment:'Blast x1, Bleed x1, Dark x1',elem:'Fire'},
+  {name:'Azure Rathalos',type:'Flying Wyvern',transforms:[{s:'Normal',a:'p'},{s:'Enraged',a:'t'},{s:'Airborne',a:'s'}],weak:'Dragon x2, Ice x1',ailment:'Para x1, Sleep x1, Blast x1, Bleed x1, Dark x1',elem:'Fire'},
+  {name:'Battle-Bound Azure Rathalos',type:'Flying Wyvern',transforms:[{s:'Normal',a:'p'},{s:'Enraged',a:'t'},{s:'Airborne',a:'s'}],weak:'Dragon x2, Ice x1',ailment:'Para x1, Sleep x1, Blast x1, Bleed x1, Dark x1',elem:'Fire'},
+  {name:'Dreadking Rathalos',type:'Flying Wyvern',transforms:[{s:'Normal',a:'p'}],weak:'Dragon x2, Water x1, Thunder x1',ailment:'—',elem:'Fire'},
+  {name:'Tigrex',type:'Flying Wyvern',transforms:[{s:'Normal',a:'s'},{s:'Enraged',a:'p'}],weak:'Thunder x2, Dragon x1',ailment:'Para x2, Dark x2'},
+  {name:'Brute Tigrex',type:'Flying Wyvern',transforms:[{s:'Normal',a:'p'},{s:'Enraged',a:'s'}],weak:'Water x2, Thunder x1',ailment:'Para x2, Dark x2'},
+  {name:'Grimclaw Tigrex',type:'Flying Wyvern',transforms:[{s:'Normal',a:'p'}],weak:'Water x1, Thunder x1, Dragon x1',ailment:'—'},
+  {name:'Gravios',type:'Flying Wyvern',transforms:[{s:'Normal',a:'p'},{s:'Enraged',a:'t'}],weak:'Water x2, Dragon x1',ailment:'Blast x2, Dark x2',elem:'Fire'},
+  {name:'Black Gravios',type:'Flying Wyvern',transforms:[{s:'Normal',a:'p'},{s:'Enraged',a:'t'}],weak:'Water x2, Dragon x1',ailment:'Blast x2, Dark x2',elem:'Fire'},
+  {name:'Feral Gravios',type:'Flying Wyvern',transforms:[{s:'Normal',a:'p'},{s:'Enraged',a:'t'}],weak:'Thunder x2, Ice x1, Dragon x1',ailment:'Blast x2, Dark x2',elem:'Water'},
+  {name:'Diablos',type:'Flying Wyvern',transforms:[{s:'Normal',a:'p'},{s:'Enraged',a:'s'},{s:'Burrowed',a:'s'}],weak:'Ice x2, Water x1',ailment:'Dark x2'},
+  {name:'Black Diablos',type:'Flying Wyvern',transforms:[{s:'Normal',a:'p'},{s:'Enraged',a:'s'},{s:'Burrowed',a:'s'}],weak:'Ice x2, Water x1',ailment:'Dark x2'},
+  {name:'Bloodbath Diablos',type:'Flying Wyvern',transforms:[{s:'Normal',a:'s'}],weak:'Water x2, Ice x1, Dragon x1',ailment:'—'},
+  {name:'Invasive Diablos',type:'Flying Wyvern',transforms:[{s:'Normal',a:'p'},{s:'Enraged',a:'s'},{s:'Invading',a:'p'},{s:'Burrowed',a:'p'}],weak:'Ice x2, Water x1, Dragon x1',ailment:'Dark x2'},
+  {name:'Seregios',type:'Flying Wyvern',transforms:[{s:'Normal',a:'t'},{s:'Enraged',a:'s'}],weak:'Thunder x2, Ice x1',ailment:'Poison x1, Burn x1, Dark x1'},
+  {name:'Exotic Seregios',type:'Flying Wyvern',transforms:[{s:'Normal',a:'s'},{s:'Enraged',a:'t'}],weak:'Thunder x2, Ice x1',ailment:'Poison x1, Sleep x1, Blast x1, Bleed x1, Dark x1'},
+  {name:'Invasive Seregios',type:'Flying Wyvern',transforms:[{s:'Normal',a:'t'},{s:'Enraged',a:'s'},{s:'Invading',a:'p'}],weak:'Thunder x2, Ice x1',ailment:'Resist all'},
+  {name:'Espinas',type:'Flying Wyvern',transforms:[{s:'Normal',a:'p'},{s:'Enraged',a:'s'},{s:'Sleep',a:'p'}],weak:'Resist all — Enraged: Ice x2, Dragon x1',ailment:'Dark x2',elem:'Fire'},
+  {name:'Feral Espinas',type:'Flying Wyvern',transforms:[{s:'Normal',a:'p'},{s:'Enraged',a:'s'}],weak:'Resist all — Enraged: Dragon x2, Ice x1',ailment:'Dark x2',elem:'Fire'},
+  {name:'Rey Dau',type:'Flying Wyvern',transforms:[{s:'Normal',a:'s'},{s:'Fulgurite Mantle',a:'p'}],weak:'Ice x2, Water x1',ailment:'Blast x2, Dark x2',elem:'Thunder'},
+  {name:'Arkveld',type:'Flying Wyvern',transforms:[{s:'Normal',a:'t'},{s:'Dragon Mantle',a:'p'}],weak:'Dragon x2 — Mantle: All x2',ailment:'Blast x2, Dark x2',elem:'Dragon'},
+
+  // ─── Elder Dragons ───
+  {name:'Yama Tsukami',type:'Elder Dragon',transforms:[{s:'Normal',a:'p'},{s:'Open Mouth',a:'s'},{s:'Exposed',a:'p'}],weak:'Dragon x2, Ice x1',ailment:'Dark x2'},
+  {name:'Yama Tsukami (Crystallized)',type:'Elder Dragon',transforms:[{s:'Normal',a:'p'},{s:'Open Mouth',a:'s'}],weak:'Dragon x2, Ice x1',ailment:'Dark x2'},
+  {name:'Namielle',type:'Elder Dragon',transforms:[{s:'Water Mantle',a:'t'},{s:'Abyssal Charge',a:'s'},{s:'Exposed',a:'p'},{s:'Water Depleted',a:'p'}],weak:'Fire x2, Ice x1, Dragon x1',ailment:'Poison x2',elem:'Water'},
+  {name:'Velkhana',type:'Elder Dragon',transforms:[{s:'Normal',a:'t'},{s:'Ice Mantle',a:'s'},{s:'Freezing Fog',a:'p'},{s:'Exposed',a:'t'}],weak:'Fire x2, Thunder x1, Dragon x1',ailment:'Burn x2, Blast x2',elem:'Ice'},
+  {name:'Wind Serpent Ibushi',type:'Elder Dragon',transforms:[{s:'Wind Mantle',a:'p'},{s:'Mind Connection',a:'s'},{s:'Exposed',a:'p'}],weak:'Fire x2, Dragon x1',ailment:'Dark x2',elem:'Dragon'},
+  {name:'Thunder Serpent Narwa',type:'Elder Dragon',transforms:[{s:'Thunder Mantle',a:'t'},{s:'Mind Connection',a:'s'},{s:'Exposed',a:'t'}],weak:'Ice x2, Dragon x1',ailment:'Poison x2, Dark x2',elem:'Thunder'},
+  {name:'Malzeno',type:'Elder Dragon',transforms:[{s:'Normal',a:'s'},{s:'Blood Rite',a:'t'},{s:'Exposed',a:'s'}],weak:'Dragon x2, Fire x1, Ice x1',ailment:'Burn x2',elem:'Dragon'},
+  {name:'Aenshin',type:'Elder Dragon',transforms:[{s:'Protection',a:'t'},{s:'Unleashed',a:'p'},{s:'Exposed',a:'p'}],weak:'Fire x2, Dragon x2 — Unleashed: Raw x2',ailment:'Poison x2, Dark x2',elem:'Dragon'},
+
+  // ─── Small Monsters ───
+  {name:'Aptonoth',type:'Small Monster',transforms:[{s:'Normal',a:'p'}],weak:'Fire x2, Water x1, Thunder x1, Ice x1',ailment:'All x2'},
+  {name:'Slagtoth',type:'Small Monster',transforms:[{s:'Normal',a:'p'}],weak:'Thunder x2, Ice x1',ailment:'Poison x2, Sleep x2, Dark x2'},
+  {name:'Bnahabra',type:'Small Monster',transforms:[{s:'Normal',a:'t'}],weak:'Fire x2, Water x1, Ice x1',ailment:'All except Para x2'},
+  {name:'Great Thunderbug',type:'Small Monster',transforms:[{s:'Normal',a:'s'}],weak:'Water x2, Ice x1',ailment:'Poison x2, Burn x2, Blast x2, Bleed x2, Dark x2',elem:'Thunder'},
+  {name:'Great Dracophage Bug',type:'Small Monster',transforms:[{s:'Normal',a:'s'}],weak:'Thunder x2, Water x1',ailment:'Poison x2, Burn x2, Blast x2, Bleed x2, Dark x2',elem:'Dragon'},
+  {name:'Remobra',type:'Small Monster',transforms:[{s:'Normal',a:'t'}],weak:'Dragon x2, Water x1',ailment:'Para x2'},
+  {name:'Gargwa',type:'Small Monster',transforms:[{s:'Normal',a:'s'}],weak:'Fire x2, Water x1, Thunder x1, Ice x1',ailment:'Poison x2, Burn x2, Para x2, Dark x2'},
+  {name:'Barrel Felyne',type:'Small Monster',transforms:[{s:'Normal',a:'s'}],weak:'Barrel Bomb / Mega Barrel Bomb',ailment:'—'},
+  {name:'Great Barrel Felyne',type:'Small Monster',transforms:[{s:'Normal',a:'s'}],weak:'Mega Barrel Bomb',ailment:'—'},
+];
+
+const TYPES = ['Bird Wyvern','Fanged Beast','Amphibian','Carapaceon','Temnoceran','Brute Wyvern','Piscine Wyvern','Leviathan','Fanged Wyvern','Flying Wyvern','Elder Dragon','Small Monster'];
+
+// Element colors
+const ELEM_COLORS = {
+  fire:'#ff6b35',water:'#3b9dff',thunder:'#ffd93d',ice:'#7fdbff',dragon:'#c77dff',raw:'#aaaaaa',
+  poison:'#b266ff',burn:'#ff6b35',para:'#ffd93d',sleep:'#7fdbff',blast:'#ff4d6d',bleed:'#ff3333',dark:'#9966cc',
+  blastblight:'#ff4d6d',bleeding:'#ff3333',darkness:'#9966cc',paralysis:'#ffd93d'
+};
+
+function elemColor(text) {
+  const t = text.toLowerCase();
+  for (const [k,v] of Object.entries(ELEM_COLORS)) {
+    if (t.includes(k)) return v;
+  }
+  return '#888';
+}
+
+// Favorites
+let favorites = new Set();
+try {
+  const saved = localStorage.getItem('mhs3_favs');
+  if (saved) favorites = new Set(JSON.parse(saved));
+} catch(e) {}
+
+function saveFavs() {
+  try { localStorage.setItem('mhs3_favs', JSON.stringify([...favorites])); } catch(e) {}
+}
+
+function toggleFav(name, e) {
+  e.stopPropagation();
+  if (favorites.has(name)) favorites.delete(name); else favorites.add(name);
+  saveFavs();
+  render();
+}
+
+let activeFilter = 'All';
+let showOnlyFavs = false;
+
+const atNames = { p:'Power', s:'Speed', t:'Technical' };
+const atClasses = { p:'power', s:'speed', t:'tech' };
+const atKeys = { p:'power', s:'speed', t:'tech' };
+
+function atTag(key) {
+  return `<span class="atype ${atClasses[key]}"><img src="${AT[atKeys[key]]}" alt="${atNames[key]}"> ${atNames[key]}</span>`;
+}
+
+function elemTag(text) {
+  const col = elemColor(text);
+  const bg = col + '18';
+  const border = col + '30';
+  return `<span class="elem-tag" style="background:${bg};color:${col};border:1px solid ${border}"><span class="dot" style="background:${col}"></span>${text}</span>`;
+}
+
+function ailmentTag(text) {
+  const col = elemColor(text);
+  const hasCo = col !== '#888';
+  const style = hasCo ? `border-color:${col}30;color:${col}` : '';
+  return `<span class="ailment-tag" style="${style}">${text}</span>`;
+}
+
+function renderFilters() {
+  document.getElementById('filters').innerHTML =
+    ['All', ...TYPES].map(t =>
+      `<button class="filter-btn${t === activeFilter ? ' active' : ''}" onclick="setFilter('${t}')">${t}</button>`
+    ).join('');
+}
+
+function setFilter(t) { activeFilter = t; renderFilters(); render(); }
+
+function render() {
+  const q = document.getElementById('search').value.toLowerCase().trim();
+  const filtered = MONSTERS.filter(m => {
+    if (showOnlyFavs && !favorites.has(m.name)) return false;
+    if (activeFilter !== 'All' && m.type !== activeFilter) return false;
+    if (!q) return true;
+    return m.name.toLowerCase().includes(q) || m.type.toLowerCase().includes(q) ||
+      (m.weak && m.weak.toLowerCase().includes(q)) || (m.ailment && m.ailment.toLowerCase().includes(q));
+  });
+
+  // Sort: favorites first
+  filtered.sort((a, b) => {
+    const af = favorites.has(a.name) ? 0 : 1;
+    const bf = favorites.has(b.name) ? 0 : 1;
+    return af - bf;
+  });
+
+  document.getElementById('headerCount').textContent = `${filtered.length} / ${MONSTERS.length}`;
+  document.getElementById('count').textContent = '';
+
+  if (!filtered.length) {
+    document.getElementById('grid').innerHTML = '<div class="no-results">No monsters found.</div>';
+    return;
+  }
+
+  document.getElementById('grid').innerHTML = filtered.map(m => {
+    const icon = getIcon(m.name);
+    const isFav = favorites.has(m.name);
+    const imgEl = icon ? `<img src="${icon}" alt="${m.name}" loading="lazy" onerror="this.parentElement.style.display='none'">` : '';
+
+    const tRows = m.transforms.map(t =>
+      `<div class="transform-row"><span class="state-label">${t.s}</span>${atTag(t.a)}</div>`
+    ).join('');
+
+    // Element weakness tags
+    const weakParts = m.weak.split(', ').filter(w => w && w !== '—');
+    const weakHtml = weakParts.length ? weakParts.map(w => elemTag(w)).join('') : '<span class="ailment-tag">—</span>';
+
+    // Ailment tags
+    const ailParts = m.ailment.split(', ').filter(a => a && a !== '—');
+    const ailHtml = ailParts.length ? ailParts.map(a => ailmentTag(a)).join('') : '<span class="ailment-tag">—</span>';
+
+    return `<div class="card${isFav ? ' fav' : ''}">
+      <div class="info">
+        <div class="name">${m.name}<span class="type-label">${m.type}${m.elem ? ' · '+m.elem : ''}</span></div>
+        <div class="section-label">Attack Pattern</div>
+        <div class="transforms">${tRows}</div>
+        <div class="section-label">Element Weakness</div>
+        <div class="weak-row">${weakHtml}</div>
+        <div class="section-label">Ailment Weakness</div>
+        <div class="ailment-row">${ailHtml}</div>
+      </div>
+      <button class="fav-btn${isFav ? ' active' : ''}" onclick="toggleFav('${m.name.replace(/'/g,"\\'")}',event)">★</button>
+      <div class="monster-img">${imgEl}</div>
+    </div>`;
+  }).join('');
+}
+
+// Fav toggle button
+document.getElementById('favToggle').addEventListener('click', function() {
+  showOnlyFavs = !showOnlyFavs;
+  this.classList.toggle('active', showOnlyFavs);
+  render();
+});
+
+document.getElementById('search').addEventListener('input', render);
+renderFilters();
+render();
+</script>
+</body>
+</html>
