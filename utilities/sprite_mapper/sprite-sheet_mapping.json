@@ -1,0 +1,634 @@
+{
+  "Rathian": {
+    "row": 0,
+    "col": 1
+  },
+  "Pink Rathian": {
+    "row": 0,
+    "col": 2
+  },
+  "Dreadqueen Rathian": {
+    "row": 0,
+    "col": 4
+  },
+  "Azure Rathalos": {
+    "row": 0,
+    "col": 6
+  },
+  "Rathalos": {
+    "row": 0,
+    "col": 5
+  },
+  "Dreadking Rathalos": {
+    "row": 0,
+    "col": 8
+  },
+  "Diablos": {
+    "row": 1,
+    "col": 1
+  },
+  "Black Diablos": {
+    "row": 1,
+    "col": 2
+  },
+  "Bloodbath Diablos": {
+    "row": 1,
+    "col": 3
+  },
+  "Izuchi": {
+    "row": 10,
+    "col": 4
+  },
+  "Great Izuchi": {
+    "row": 6,
+    "col": 15
+  },
+  "Feral Great Izuchi": {
+    "row": 7,
+    "col": 0
+  },
+  "Velociprey": {
+    "row": 9,
+    "col": 4
+  },
+  "Velocidrome": {
+    "row": 1,
+    "col": 15
+  },
+  "Exotic Velocidrome": {
+    "row": 2,
+    "col": 0
+  },
+  "Feral Velocidrome": {
+    "row": 2,
+    "col": 1
+  },
+  "Kula-Ya-Ku": {
+    "row": 7,
+    "col": 7
+  },
+  "Blue Yian Kut-Ku": {
+    "row": 1,
+    "col": 5
+  },
+  "Yian Kut-Ku": {
+    "row": 1,
+    "col": 4
+  },
+  "Feral Yian Kut-Ku": {
+    "row": 1,
+    "col": 6
+  },
+  "Gypceros": {
+    "row": 1,
+    "col": 7
+  },
+  "Purple Gypceros": {
+    "row": 1,
+    "col": 8
+  },
+  "Feral Gypceros": {
+    "row": 1,
+    "col": 9
+  },
+  "Aknosom": {
+    "row": 6,
+    "col": 1
+  },
+  "Feral Aknosom": {
+    "row": 6,
+    "col": 2
+  },
+  "Pukei-Pukei": {
+    "row": 7,
+    "col": 5
+  },
+  "Yian Garuga": {
+    "row": 2,
+    "col": 4
+  },
+  "Deadeye Yian Garuga": {
+    "row": 2,
+    "col": 5
+  },
+  "Invasive Yian Garuga": {
+    "row": 10,
+    "col": 15
+  },
+  "Arzuros": {
+    "row": 4,
+    "col": 7
+  },
+  "Invasive Arzuros": {
+    "row": 11,
+    "col": 1
+  },
+  "Bishaten": {
+    "row": 5,
+    "col": 14
+  },
+  "Blood Orange Bishaten": {
+    "row": 5,
+    "col": 15
+  },
+  "Feral Bishaten": {
+    "row": 6,
+    "col": 0
+  },
+  "Blango": {
+    "row": 9,
+    "col": 9
+  },
+  "Blangonga": {
+    "row": 2,
+    "col": 7
+  },
+  "Feral Blangonga": {
+    "row": 2,
+    "col": 8
+  },
+  "Garangolm": {
+    "row": 8,
+    "col": 11
+  },
+  "Chatacabra": {
+    "row": 12,
+    "col": 5
+  },
+  "Feral Chatacabra": {
+    "row": 12,
+    "col": 6
+  },
+  "Ajarakan": {
+    "row": 12,
+    "col": 8
+  },
+  "Feral Ajarakan": {
+    "row": 12,
+    "col": 9
+  },
+  "Goss Harag": {
+    "row": 6,
+    "col": 12
+  },
+  "Canyne": {
+    "row": 10,
+    "col": 11
+  },
+  "Tetranadon": {
+    "row": 6,
+    "col": 3
+  },
+  "Feral Tetranadon": {
+    "row": 6,
+    "col": 4
+  },
+  "Ceanataur": {
+    "row": 9,
+    "col": 8
+  },
+  "Shogun Ceanataur": {
+    "row": 2,
+    "col": 6
+  },
+  "Invasive Shogun Ceanataur": {
+    "row": 11,
+    "col": 0
+  },
+  "Nerscylla": {
+    "row": 4,
+    "col": 10
+  },
+  "Invasive Nerscylla": {
+    "row": 11,
+    "col": 2
+  },
+  "Shrouded Nerscylla": {
+    "row": 4,
+    "col": 12
+  },
+  "Feral Nerscylla": {
+    "row": 4,
+    "col": 11
+  },
+  "Rachnoid": {
+    "row": 10,
+    "col": 5
+  },
+  "Rakna-Kadaki": {
+    "row": 6,
+    "col": 8
+  },
+  "Feral Rakna-Kadaki": {
+    "row": 6,
+    "col": 9
+  },
+  "Barroth": {
+    "row": 3,
+    "col": 9
+  },
+  "Jade Barroth": {
+    "row": 3,
+    "col": 11
+  },
+  "Feral Barroth": {
+    "row": 3,
+    "col": 10
+  },
+  "Anjanath": {
+    "row": 7,
+    "col": 2
+  },
+  "Fulgur Anjanath": {
+    "row": 7,
+    "col": 4
+  },
+  "Glavenus": {
+    "row": 5,
+    "col": 0
+  },
+  "Hellblade Glavenus": {
+    "row": 5,
+    "col": 6
+  },
+  "Feral Glavenus": {
+    "row": 5,
+    "col": 2
+  },
+  "Brachydios": {
+    "row": 4,
+    "col": 8
+  },
+  "Feral Brachydios": {
+    "row": 4,
+    "col": 9
+  },
+  "Deviljho": {
+    "row": 3,
+    "col": 7
+  },
+  "Feral Deviljho": {
+    "row": 3,
+    "col": 8
+  },
+  "Honed Glavenus": {
+    "row": 5,
+    "col": 3
+  },
+  "Cephalos": {
+    "row": 13,
+    "col": 8
+  },
+  "Plesioth": {
+    "row": 1,
+    "col": 10
+  },
+  "Green Plesioth": {
+    "row": 1,
+    "col": 12
+  },
+  "Ludroth": {
+    "row": 9,
+    "col": 14
+  },
+  "Royal Ludroth": {
+    "row": 3,
+    "col": 14
+  },
+  "Purple Ludroth": {
+    "row": 3,
+    "col": 15
+  },
+  "Nibelsnarf": {
+    "row": 4,
+    "col": 1
+  },
+  "Exotic Nibelsnarf": {
+    "row": 4,
+    "col": 2
+  },
+  "Somnacanth": {
+    "row": 6,
+    "col": 5
+  },
+  "Aurora Somnacanth": {
+    "row": 6,
+    "col": 6
+  },
+  "Feral Somnacanth": {
+    "row": 6,
+    "col": 7
+  },
+  "Lagiacrus": {
+    "row": 3,
+    "col": 12
+  },
+  "Ivory Lagiacrus": {
+    "row": 3,
+    "col": 13
+  },
+  "Mizutsune": {
+    "row": 5,
+    "col": 9
+  },
+  "Soulseer Mizutsune": {
+    "row": 5,
+    "col": 10
+  },
+  "Almudron": {
+    "row": 6,
+    "col": 10
+  },
+  "Tobi-Kadachi": {
+    "row": 7,
+    "col": 8
+  },
+  "Feral Tobi-Kadachi": {
+    "row": 7,
+    "col": 10
+  },
+  "Odogaron": {
+    "row": 8,
+    "col": 3
+  },
+  "Ebony Odogaron": {
+    "row": 8,
+    "col": 4
+  },
+  "Invasive Odogaron": {
+    "row": 11,
+    "col": 4
+  },
+  "Zinogre": {
+    "row": 4,
+    "col": 3
+  },
+  "Stygian Zinogre": {
+    "row": 4,
+    "col": 4
+  },
+  "Thunderlord Zinogre": {
+    "row": 4,
+    "col": 5
+  },
+  "Lunagaron": {
+    "row": 8,
+    "col": 10
+  },
+  "Battle-Bound Lunagaron": {
+    "row": 12,
+    "col": 11
+  },
+  "Magnamalo": {
+    "row": 5,
+    "col": 12
+  },
+  "Feral Magnamalo": {
+    "row": 5,
+    "col": 13
+  },
+  "Paolumu": {
+    "row": 7,
+    "col": 11
+  },
+  "Feral Paolumu": {
+    "row": 7,
+    "col": 12
+  },
+  "Khezu": {
+    "row": 0,
+    "col": 11
+  },
+  "Red Khezu": {
+    "row": 0,
+    "col": 12
+  },
+  "Invasive Khezu": {
+    "row": 10,
+    "col": 12
+  },
+  "Legiana": {
+    "row": 8,
+    "col": 0
+  },
+  "Feral Legiana": {
+    "row": 8,
+    "col": 1
+  },
+  "Exotic Legiana": {
+    "row": 8,
+    "col": 2
+  },
+  "Barioth": {
+    "row": 3,
+    "col": 5
+  },
+  "Sand Barioth": {
+    "row": 3,
+    "col": 6
+  },
+  "Nargacuga": {
+    "row": 3,
+    "col": 2
+  },
+  "Green Nargacuga": {
+    "row": 3,
+    "col": 3
+  },
+  "Silverwind Nargacuga": {
+    "row": 3,
+    "col": 4
+  },
+  "Astalos": {
+    "row": 5,
+    "col": 7
+  },
+  "Boltreaver Astalos": {
+    "row": 5,
+    "col": 8
+  },
+  "Tigrex": {
+    "row": 2,
+    "col": 14
+  },
+  "Brute Tigrex": {
+    "row": 2,
+    "col": 15
+  },
+  "Grimclaw Tigrex": {
+    "row": 3,
+    "col": 1
+  },
+  "Gravios": {
+    "row": 0,
+    "col": 13
+  },
+  "Black Gravios": {
+    "row": 0,
+    "col": 15
+  },
+  "Invasive Diablos": {
+    "row": 10,
+    "col": 13
+  },
+  "Feral Gravios": {
+    "row": 1,
+    "col": 0
+  },
+  "Seregios": {
+    "row": 4,
+    "col": 13
+  },
+  "Invasive Seregios": {
+    "row": 11,
+    "col": 3
+  },
+  "Exotic Seregios": {
+    "row": 4,
+    "col": 14
+  },
+  "Espinas": {
+    "row": 8,
+    "col": 14
+  },
+  "Feral Espinas": {
+    "row": 8,
+    "col": 15
+  },
+  "Rey Dau": {
+    "row": 12,
+    "col": 7
+  },
+  "Arkveld": {
+    "row": 12,
+    "col": 10
+  },
+  "Yama Tsukami": {
+    "row": 2,
+    "col": 12
+  },
+  "Yama Tsukami (Crystallized)": {
+    "row": 2,
+    "col": 13
+  },
+  "Namielle": {
+    "row": 8,
+    "col": 8
+  },
+  "Velkhana": {
+    "row": 8,
+    "col": 7
+  },
+  "Wind Serpent Ibushi": {
+    "row": 6,
+    "col": 11
+  },
+  "Thunder Serpent Narwa": {
+    "row": 7,
+    "col": 1
+  },
+  "Malzeno": {
+    "row": 8,
+    "col": 9
+  },
+  "Aenshin": {
+    "row": 12,
+    "col": 13
+  },
+  "Aptonoth": {
+    "row": 9,
+    "col": 1
+  },
+  "Slagtoth": {
+    "row": 10,
+    "col": 0
+  },
+  "Bnahabra": {
+    "row": 9,
+    "col": 11
+  },
+  "Great Thunderbug": {
+    "row": 9,
+    "col": 6
+  },
+  "Great Dracophage Bug": {
+    "row": 10,
+    "col": 9
+  },
+  "Remobra": {
+    "row": 9,
+    "col": 7
+  },
+  "Gargwa": {
+    "row": 10,
+    "col": 1
+  },
+  "Barrel Felyne": {
+    "row": 10,
+    "col": 6
+  },
+  "Great Barrel Felyne": {
+    "row": 10,
+    "col": 7
+  },
+  "Thea": {
+    "row": 14,
+    "col": 5
+  },
+  "Kora": {
+    "row": 14,
+    "col": 7
+  },
+  "Gaulle": {
+    "row": 14,
+    "col": 6
+  },
+  "Ogden": {
+    "row": 14,
+    "col": 8
+  },
+  "Eleanor": {
+    "row": 14,
+    "col": 4
+  },
+  "Simon": {
+    "row": 14,
+    "col": 3
+  },
+  "ProtagonistM": {
+    "row": 14,
+    "col": 1
+  },
+  "ProtagonistW": {
+    "row": 14,
+    "col": 2
+  },
+  "Golma": {
+    "row": 8,
+    "col": 12
+  },
+  "Great Poogie": {
+    "row": 10,
+    "col": 10
+  },
+  "Invasive Plesioth": {
+    "row": 10,
+    "col": 14
+  },
+  "question_mark": {
+    "row": 14,
+    "col": 15
+  },
+  "Battle-Bound Azure Rathalos": {
+    "row": 12,
+    "col": 12
+  },
+  "Twin Rathalos Right": {
+    "row": 0,
+    "col": 9
+  },
+  "Twin Rathalos Left": {
+    "row": 0,
+    "col": 10
+  }
+}
