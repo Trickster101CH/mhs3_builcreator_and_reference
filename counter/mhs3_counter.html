@@ -81,10 +81,15 @@
     margin-bottom: 8px;
   }
 
-  #search {
+  .search-wrap {
     flex: 1;
     min-width: 0;
-    padding: 10px 14px;
+    position: relative;
+  }
+
+  #search {
+    width: 100%;
+    padding: 10px 38px 10px 14px;
     font-size: 16px; /* prevents iOS zoom */
     background: var(--bg-card);
     border: 1px solid var(--border);
@@ -95,6 +100,26 @@
   }
   #search:focus { border-color: var(--accent); }
   #search::placeholder { color: var(--text-faint); }
+
+  .search-clear {
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 28px;
+    height: 28px;
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 18px;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .search-clear:active { background: var(--border); }
 
   .fav-toggle {
     width: 44px;
@@ -170,7 +195,7 @@
     .grid { grid-template-columns: 1fr; gap: 8px; }
     .card { overflow: hidden; }
     .monster-img { width: 90px; }
-    .monster-img img { width: 90px; }
+    .monster-img .sprite { width: 90px; height: 90px; background-size: 1440px 1440px; }
     .state-label { min-width: 70px; }
     .transforms { padding: 8px 10px; }
   }
@@ -332,10 +357,11 @@
     overflow: hidden;
     align-self: stretch;
   }
-  .monster-img img {
+  .monster-img .sprite {
     width: 120px;
-    height: 100%;
-    object-fit: contain;
+    height: 120px;
+    background-size: 1920px 1920px;
+    background-repeat: no-repeat;
   }
 
   .no-results {
@@ -365,7 +391,10 @@
     <span id="headerCount"></span>
   </header>
   <div class="search-row">
-    <input type="text" id="search" placeholder="Monster search…" autocomplete="off" spellcheck="false">
+    <div class="search-wrap">
+      <input type="text" id="search" placeholder="Monster search…" autocomplete="off" spellcheck="false">
+      <button class="search-clear" id="searchClear" type="button" aria-label="Clear search">✕</button>
+    </div>
     <button class="fav-toggle" id="favToggle" title="Show only favorites">★</button>
   </div>
   <div class="filters" id="filters"></div>
@@ -384,147 +413,174 @@ const AT = {
   tech:  B+'4428926/baed44227f74f5301be9ee1b6dc1f7cc.png/show',
 };
 
-const ICONS = {
-  'Aknosom':B+'4440978/9e00a6e3bede5ba17f447db5bab4f53a.png/show',
-  'Almudron':B+'4441912/3ccc29251f55557ea04efdc1e1ed5381.png/show',
-  'Anjanath':B+'4431152/86f291388a89f46535a21174594642be.png/show',
-  'Aptonoth':B+'4438541/042ca0f1b0df047c5c464fbf2bfe5c2b.png/show',
-  'Arkveld':B+'4442069/107b6ae54a1f1f5f705998e2310c7bc8.png/show',
-  'Arzuros':B+'4440985/b43acec06d6ed795fb1360ff7172ef4f.png/show',
-  'Astalos':B+'4440722/69a24f1ca0232eb701ca59c0e7aea09a.png/show',
-  'Aurora Somnacanth':B+'4441856/f5c7678f0d6a0f267c75c4a78f154b88.png/show',
-  'Azure Rathalos':B+'4442850/01690cfa603796b16e41438298264a2e.png/show',
-  'Barioth':B+'4442071/1bb4556b0b481cf228a8714550240048.png/show',
-  'Barroth':B+'4441920/22f99756c0512bcc1226f41726a1e2bc.png/show',
-  'Barrel Felyne':B+'4430061/8802fa33532c7803b4a8c618c49020a9.png/show',
-  'Bishaten':B+'4440990/35eecb00592f05ea0294e265e11da526.png/show',
-  'Black Diablos':B+'4442480/d8ae28ff81b3655a9785f2eb01a59470.png/show',
-  'Black Gravios':B+'4441914/1d1ae3a7b7e8772dba9bfe58d4f39f63.png/show',
-  'Blango':B+'4442614/1d5ac23e3aaf9ba3d5643626edec849b.png/show',
-  'Blangonga':B+'4443624/7e9652b1b0491af37f5fdc8e7fd05ac1.png/show',
-  'Blood Orange Bishaten':B+'4441909/17d196997b753d00bfa7ac5afe39faf9.png/show',
-  'Bloodbath Diablos':B+'4442419/e1faee286c7be12187ac53a321871a85.png/show',
-  'Blue Yian Kut-Ku':B+'4441299/27a98ab55ae2bf79fe468cd0b876bbcf.png/show',
-  'Bnahabra':B+'4430047/877123380883af20ac922e3fc638c995.png/show',
-  'Boltreaver Astalos':B+'4440580/79f894906c3bff7bf308a08332bebe87.png/show',
-  'Brachydios':B+'4441476/e88e749f50dfdb88c7ff8461bb6cf9f9.png/show',
-  'Brute Tigrex':B+'4442067/7ac45014e2eeb948fc25d9711060f818.png/show',
-  'Canyne':B+'4440991/d907acfba8e4e3c795f0983a4c278c3f.png/show',
-  'Ceanataur':B+'4442287/9999ba4b08b1208a736f1970cd8f2c2a.png/show',
-  'Cephalos':B+'4442613/20194298473cc22d4cdd82513d9d7b87.png/show',
-  'Chatacabra':B+'4430994/454db4fb2637bf8761ba52407bfa9091.png/show',
-  'Deadeye Yian Garuga':B+'4442068/e3112707b5d1a5d423385301ca84987b.png/show',
-  'Deviljho':B+'4442630/a010d9ffb24a61e6c0cc150ce531de9f.png/show',
-  'Diablos':B+'4442493/7736fbd9e87986c6397f094fa2b58aa1.png/show',
-  'Dreadking Rathalos':B+'4442852/3759b93aa503f978e0f56ea0c1c7c672.png/show',
-  'Dreadqueen Rathian':B+'4440579/fc681b152bb5472a0234e5032c2b2984.png/show',
-  'Espinas':B+'4435584/0c06106dcf8a95ea231fb1fdbac6f51b.png/show',
-  'Feral Ajarakan':B+'4442534/e9f763d10ccf858eabd39768fc315ded.png/show',
-  'Feral Aknosom':B+'4441906/3d6332b888d47fdc21a99fbce58ca330.png/show',
-  'Feral Nerscylla':B+'4435556/f582e8ed77944996aed4678f3f5bde17.png/show',
-  'Feral Somnacanth':B+'4440988/eeaaab7f996bd58893c4ed7087f74b53.png/show',
-  'Feral Velocidrome':B+'4438609/8134509a3d2b06aabdc97b1e69ee56ff.png/show',
-  'Fulgur Anjanath':B+'4442753/97ba5bab953cfed73ae75a848a739370.png/show',
-  'Garangolm':B+'4441921/b180f1881006be49ec4ef23aa27d9777.png/show',
-  'Gargwa':B+'4440977/8161ccf7839476973cbb703ef2a774aa.png/show',
-  'Goss Harag':B+'4442756/fe389d742d855b55bf368ba960a9f461.png/show',
-  'Gravios':B+'4442748/46cc2dfd0d7fa62c9008a5dbb38cd055.png/show',
-  'Great Barrel Felyne':B+'4441908/cb66610e9b86fc96da5e48b19b29d0c0.png/show',
-  'Great Dracophage Bug':B+'4442754/028ed3d923e1d6e51cbafffcbf85b5c5.png/show',
-  'Great Izuchi':B+'4440983/d94003ccf8778fc07946e0a68bbf99f5.png/show',
-  'Great Thunderbug':B+'4441458/ccf3279007b248df20097aeee5f07899.png/show',
-  'Green Nargacuga':B+'4441919/f2b214b679b0e4fc172ec089755c5b55.png/show',
-  'Green Plesioth':B+'4440831/b3f1570ca35048dc80dbbeb22017b857.png/show',
-  'Grimclaw Tigrex':B+'4442074/907bba2f81ce4387dc8379dc1af16a36.png/show',
-  'Gypceros':B+'4431053/b15d2742e0da4e90078ffa6b6203d98e.png/show',
-  'Glavenus':B+'4443623/03b535bd6e4e94e5c6dc016760a68b9c.png/show',
-  'Hellblade Glavenus':B+'4442796/f46c7ee4cbc058cbdb68a532492eed11.png/show',
-  'Ivory Lagiacrus':B+'4440830/9ec9aeb30114af7f3663e0d39388586b.png/show',
-  'Izuchi':B+'4440982/ef6aad0f25ec01452f4e0923945dc03f.png/show',
-  'Jade Barroth':B+'4442747/9443fcf78bd83647b983fee678a9f491.png/show',
-  'Khezu':B+'4441916/cb1c4389a86876fadf5f680ac7f5e91f.png/show',
-  'Legiana':B+'4442501/1ba514a955e6c568f320eb267448e3c2.png/show',
-  'Kula-Ya-Ku':B+'4441902/63a56ed126dfdb91c8db39d1ec2f93af.png/show',
-  'Lagiacrus':B+'4438490/b7480c885f0d7a9585aaadf8eed4f5b9.png/show',
-  'Ludroth':B+'4431181/53389e407138bef05c7a8e65720e6fa6.png/show',
-  'Lunagaron':B+'4442584/6d9d552a619f10649685d28c968ac63f.png/show',
-  'Magnamalo':B+'4440986/d889e7190d74bddd41e8f720a9e73916.png/show',
-  'Malzeno':B+'4442494/7c633f99fe673a82856e637fc25e06d7.png/show',
-  'Mizutsune':B+'4441801/354507a56db4582a5d1d4b4ba476e8b0.png/show',
-  'Namielle':B+'4441664/453686d0269250363bf7d494ecd2bcf6.png/show',
-  'Nargacuga':B+'4441917/cfc849d9a6a1028cff596ce128854668.png/show',
-  'Nerscylla':B+'4430120/adf5774eecbc28a6fc215eee4656b7de.png/show',
-  'Nibelsnarf':B+'4442088/13cdd452b5faff114f7bcd72e7f23725.png/show',
-  'Odogaron':B+'4442598/c83ee3dca57ed79a65132f5dff72da39.png/show',
-  'Paolumu':B+'4429669/a60a8e410a9f644fdd334b3b83e2c8bb.png/show',
-  'Pink Rathian':B+'4438491/ac7da0176083e6e4a7c825195038ded6.png/show',
-  'Plesioth':B+'4433642/b2fd108128aa63edb50df86fdb66b07a.png/show',
-  'Pukei-Pukei':B+'4441303/221c75b2a96376466c65be546580fded.png/show',
-  'Purple Gypceros':B+'4431128/63e194cf2c9479b780b800bd0ad690f7.png/show',
-  'Purple Ludroth':B+'4440984/a751d563daecb2918034db00a79182ae.png/show',
-  'Rachnoid':B+'4442750/680616f09be30b9378b7d7e30ab257f0.png/show',
-  'Rakna-Kadaki':B+'4442710/ec0f0cbc63982c0099a7434b5877886a.png/show',
-  'Ratha':B+'4429673/63df721e85121073bf3b06aa7683abc0.png/show',
-  'Rathalos':B+'4442746/3a79a32786dfaa0ff4b8bc11323ae307.png/show',
-  'Rathian':B+'4430309/dda2dc58a269d5b9762a712f3e63b064.png/show',
-  'Red Khezu':B+'4441915/6ca8207c71c244be7681c27452bcb80e.png/show',
-  'Remobra':B+'4442752/664f08738bcefab8560fce6db1c7f687.png/show',
-  'Rey Dau':B+'4442503/a3c81f239ca142b7f3e05cf9751aeb5d.png/show',
-  'Royal Ludroth':B+'4431191/be921cab61be720bd5759209e0f4f648.png/show',
-  'Sand Barioth':B+'4442066/902c4c4f2a1f44dd856d51372d513ad3.png/show',
-  'Seregios':B+'4441913/65302fc0363b2bfef805296819d2df33.png/show',
-  'Silverwind Nargacuga':B+'4441918/96a09972e435f204e98eac68f65a47c7.png/show',
-  'Slagtoth':B+'4442745/c323982669a670e6894b754b2396e1e9.png/show',
-  'Somnacanth':B+'4440989/63952cd8f063107d57a99b12ad1d4895.png/show',
-  'Soulseer Mizutsune':B+'4442012/03ac63feae845c10908226c881cd3672.png/show',
-  'Stygian Zinogre':B+'4442065/a68df6f6c04fc3370c98c466174d0cbe.png/show',
-  'Tetranadon':B+'4440987/e15136dc02f7eb40b7342bbbe23b4759.png/show',
-  'Thunderlord Zinogre':B+'4442070/c7ac31c2753a8553b8e85b2cd070d905.png/show',
-  'Tigrex':B+'4441958/44716916cefb7762ec94af874d9449d4.png/show',
-  'Tobi-Kadachi':B+'4429672/eb923df6614952b706a01a6ed601f923.png/show',
-  'Velkhana':B+'3641340/9f582a0ee916ff86ff3066e1c93ad271.png/show',
-  'Velocidrome':B+'4430058/269d82e9758c278364f54db33bdacdcf.png/show',
-  'Velociprey':B+'4430055/b4991ffeafdfda36c165c4c3cacae0df.png/show',
-  'Yama Tsukami':B+'4441860/75cb7ea6dbc3ac4ebf4cda51508ffad9.png/show',
-  'Yian Garuga':B+'4441304/7c61e07e0ed239bc395d0a20c41f9974.png/show',
-  'Yian Kut-Ku':B+'4429674/433fe7b0f37825d90b81403ba6453007.png/show',
-  'Zinogre':B+'4441970/344eb0928705e1f53c4a1bb8ecd3c273.png/show',
+const SPRITE_URL='../monster_sprites.webp';
+
+const SPRITE_MAP = {
+  'Rathian':[0,1],
+  'Pink Rathian':[0,2],
+  'Dreadqueen Rathian':[0,4],
+  'Azure Rathalos':[0,6],
+  'Rathalos':[0,5],
+  'Dreadking Rathalos':[0,8],
+  'Diablos':[1,1],
+  'Black Diablos':[1,2],
+  'Bloodbath Diablos':[1,3],
+  'Izuchi':[10,4],
+  'Great Izuchi':[6,15],
+  'Feral Great Izuchi':[7,0],
+  'Velociprey':[9,4],
+  'Velocidrome':[1,15],
+  'Exotic Velocidrome':[2,0],
+  'Feral Velocidrome':[2,1],
+  'Kula-Ya-Ku':[7,7],
+  'Blue Yian Kut-Ku':[1,5],
+  'Yian Kut-Ku':[1,4],
+  'Feral Yian Kut-Ku':[1,6],
+  'Gypceros':[1,7],
+  'Purple Gypceros':[1,8],
+  'Feral Gypceros':[1,9],
+  'Aknosom':[6,1],
+  'Feral Aknosom':[6,2],
+  'Pukei-Pukei':[7,5],
+  'Yian Garuga':[2,4],
+  'Deadeye Yian Garuga':[2,5],
+  'Invasive Yian Garuga':[10,15],
+  'Arzuros':[4,7],
+  'Invasive Arzuros':[11,1],
+  'Bishaten':[5,14],
+  'Blood Orange Bishaten':[5,15],
+  'Feral Bishaten':[6,0],
+  'Blango':[9,9],
+  'Blangonga':[2,7],
+  'Feral Blangonga':[2,8],
+  'Garangolm':[8,11],
+  'Chatacabra':[12,5],
+  'Feral Chatacabra':[12,6],
+  'Ajarakan':[12,8],
+  'Feral Ajarakan':[12,9],
+  'Goss Harag':[6,12],
+  'Canyne':[10,11],
+  'Tetranadon':[6,3],
+  'Feral Tetranadon':[6,4],
+  'Ceanataur':[9,8],
+  'Shogun Ceanataur':[2,6],
+  'Invasive Shogun Ceanataur':[11,0],
+  'Nerscylla':[4,10],
+  'Invasive Nerscylla':[11,2],
+  'Shrouded Nerscylla':[4,12],
+  'Feral Nerscylla':[4,11],
+  'Rachnoid':[10,5],
+  'Rakna-Kadaki':[6,8],
+  'Feral Rakna-Kadaki':[6,9],
+  'Barroth':[3,9],
+  'Jade Barroth':[3,11],
+  'Feral Barroth':[3,10],
+  'Anjanath':[7,2],
+  'Fulgur Anjanath':[7,4],
+  'Glavenus':[5,0],
+  'Hellblade Glavenus':[5,6],
+  'Feral Glavenus':[5,2],
+  'Brachydios':[4,8],
+  'Feral Brachydios':[4,9],
+  'Deviljho':[3,7],
+  'Feral Deviljho':[3,8],
+  'Honed Glavenus':[5,3],
+  'Cephalos':[13,8],
+  'Plesioth':[1,10],
+  'Green Plesioth':[1,12],
+  'Ludroth':[9,14],
+  'Royal Ludroth':[3,14],
+  'Purple Ludroth':[3,15],
+  'Nibelsnarf':[4,1],
+  'Exotic Nibelsnarf':[4,2],
+  'Somnacanth':[6,5],
+  'Aurora Somnacanth':[6,6],
+  'Feral Somnacanth':[6,7],
+  'Lagiacrus':[3,12],
+  'Ivory Lagiacrus':[3,13],
+  'Mizutsune':[5,9],
+  'Soulseer Mizutsune':[5,10],
+  'Almudron':[6,10],
+  'Tobi-Kadachi':[7,8],
+  'Feral Tobi-Kadachi':[7,10],
+  'Odogaron':[8,3],
+  'Ebony Odogaron':[8,4],
+  'Invasive Odogaron':[11,4],
+  'Zinogre':[4,3],
+  'Stygian Zinogre':[4,4],
+  'Thunderlord Zinogre':[4,5],
+  'Lunagaron':[8,10],
+  'Battle-Bound Lunagaron':[12,11],
+  'Magnamalo':[5,12],
+  'Feral Magnamalo':[5,13],
+  'Paolumu':[7,11],
+  'Feral Paolumu':[7,12],
+  'Khezu':[0,11],
+  'Red Khezu':[0,12],
+  'Invasive Khezu':[10,12],
+  'Legiana':[8,0],
+  'Feral Legiana':[8,1],
+  'Exotic Legiana':[8,2],
+  'Barioth':[3,5],
+  'Sand Barioth':[3,6],
+  'Nargacuga':[3,2],
+  'Green Nargacuga':[3,3],
+  'Silverwind Nargacuga':[3,4],
+  'Astalos':[5,7],
+  'Boltreaver Astalos':[5,8],
+  'Tigrex':[2,14],
+  'Brute Tigrex':[2,15],
+  'Grimclaw Tigrex':[3,1],
+  'Gravios':[0,13],
+  'Black Gravios':[0,15],
+  'Invasive Diablos':[10,13],
+  'Feral Gravios':[1,0],
+  'Seregios':[4,13],
+  'Invasive Seregios':[11,3],
+  'Exotic Seregios':[4,14],
+  'Espinas':[8,14],
+  'Feral Espinas':[8,15],
+  'Rey Dau':[12,7],
+  'Arkveld':[12,10],
+  'Yama Tsukami':[2,12],
+  'Yama Tsukami (Crystallized)':[2,13],
+  'Namielle':[8,8],
+  'Velkhana':[8,7],
+  'Wind Serpent Ibushi':[6,11],
+  'Thunder Serpent Narwa':[7,1],
+  'Malzeno':[8,9],
+  'Aenshin':[12,13],
+  'Aptonoth':[9,1],
+  'Slagtoth':[10,0],
+  'Bnahabra':[9,11],
+  'Great Thunderbug':[9,6],
+  'Great Dracophage Bug':[10,9],
+  'Remobra':[9,7],
+  'Gargwa':[10,1],
+  'Barrel Felyne':[10,6],
+  'Great Barrel Felyne':[10,7],
+  'Thea':[14,5],
+  'Kora':[14,7],
+  'Gaulle':[14,6],
+  'Ogden':[14,8],
+  'Eleanor':[14,4],
+  'Simon':[14,3],
+  'ProtagonistM':[14,1],
+  'ProtagonistW':[14,2],
+  'Golma':[8,12],
+  'Great Poogie':[10,10],
+  'Invasive Plesioth':[10,14],
+  'question_mark':[14,15],
+  'Battle-Bound Azure Rathalos':[12,12],
+  'Twin Rathalos Right':[0,9],
+  'Twin Rathalos Left':[0,10]
 };
 
-// Icon fallbacks: variant -> base monster
-const ICON_FALLBACKS = {
-  'Exotic Velocidrome':'Velocidrome','Feral Velocidrome':'Velocidrome',
-  'Feral Great Izuchi':'Great Izuchi','Feral Yian Kut-Ku':'Yian Kut-Ku',
-  'Feral Gypceros':'Gypceros','Feral Aknosom':'Aknosom',
-  'Feral Bishaten':'Bishaten','Feral Blangonga':'Blango',
-  'Feral Ajarakan':'Feral Ajarakan','Feral Chatacabra':'Chatacabra',
-  'Feral Tetranadon':'Tetranadon','Shrouded Nerscylla':'Nerscylla',
-  'Feral Nerscylla':'Feral Nerscylla','Feral Rakna-Kadaki':'Rakna-Kadaki',
-  'Feral Barroth':'Jade Barroth','Feral Brachydios':'Brachydios',
-  'Feral Deviljho':'Deviljho','Honed Glavenus':'Hellblade Glavenus',
-  'Feral Glavenus':'Hellblade Glavenus','Feral Somnacanth':'Feral Somnacanth',
-  'Exotic Nibelsnarf':'Nibelsnarf','Soulseer Mizutsune':'Soulseer Mizutsune',
-  'Feral Tobi-Kadachi':'Tobi-Kadachi','Ebony Odogaron':'Odogaron',
-  'Feral Magnamalo':'Magnamalo','Feral Paolumu':'Paolumu',
-  'Feral Legiana':'Legiana','Exotic Legiana':'Legiana',
-  'Feral Espinas':'Espinas','Feral Gravios':'Gravios',
-  'Battle-Bound Lunagaron':'Lunagaron','Battle-Bound Azure Rathalos':'Azure Rathalos',
-  'Yama Tsukami (Crystallized)':'Yama Tsukami',
-  'Wind Serpent Ibushi':'Yama Tsukami','Thunder Serpent Narwa':'Namielle',
-  'Invasive Yian Garuga':'Yian Garuga','Invasive Arzuros':'Arzuros',
-  'Invasive Shogun Ceanataur':'Ceanataur','Invasive Nerscylla':'Nerscylla',
-  'Invasive Plesioth':'Plesioth','Invasive Khezu':'Khezu',
-  'Invasive Odogaron':'Odogaron','Invasive Diablos':'Diablos',
-  'Invasive Seregios':'Seregios',
-};
-
-function getIcon(name) {
-  if (ICONS[name]) return ICONS[name];
-  const fb = ICON_FALLBACKS[name];
-  if (fb && ICONS[fb]) return ICONS[fb];
-  // Try base name
+function getSpritePos(name) {
+  if (SPRITE_MAP[name]) return SPRITE_MAP[name];
+  // Try base name (strip prefix)
   const base = name.replace(/^(Feral|Exotic|Invasive|Honed|Battle-Bound|Shrouded) /, '');
-  if (ICONS[base]) return ICONS[base];
+  if (SPRITE_MAP[base]) return SPRITE_MAP[base];
   return null;
 }
 
@@ -795,9 +851,9 @@ function render() {
   }
 
   document.getElementById('grid').innerHTML = filtered.map(m => {
-    const icon = getIcon(m.name);
+    const sp = getSpritePos(m.name);
     const isFav = favorites.has(m.name);
-    const imgEl = icon ? `<img src="${icon}" alt="${m.name}" loading="lazy" onerror="this.parentElement.style.display='none'">` : '';
+    const imgEl = sp ? `<div class="sprite" style="background-image:url(${SPRITE_URL});background-position:${-sp[1]*120}px ${-sp[0]*120}px"></div>` : '';
 
     const tRows = m.transforms.map(t =>
       `<div class="transform-row"><span class="state-label">${t.s}</span>${atTag(t.a)}</div>`
@@ -834,7 +890,18 @@ document.getElementById('favToggle').addEventListener('click', function() {
   render();
 });
 
-document.getElementById('search').addEventListener('input', render);
+const searchInput = document.getElementById('search');
+const clearBtn = document.getElementById('searchClear');
+searchInput.addEventListener('input', function() {
+  clearBtn.style.display = this.value ? 'flex' : 'none';
+  render();
+});
+clearBtn.addEventListener('click', function() {
+  searchInput.value = '';
+  this.style.display = 'none';
+  searchInput.focus();
+  render();
+});
 renderFilters();
 render();
 </script>
