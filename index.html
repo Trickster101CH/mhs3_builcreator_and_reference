@@ -5,8 +5,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MHS3 Tools</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Crimson+Pro:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet" />
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Crimson+Pro:ital,wght@0,300;0,400;1,300&display=swap');
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 ```
@@ -29,6 +29,9 @@ html, body {
   font-size: 18px;
   line-height: 1.6;
 }
+
+/* force dark bg even before CSS vars resolve */
+html { background-color: #0d0f14; color: #e8dfc8; }
 
 /* ── background texture ── */
 body::before {
